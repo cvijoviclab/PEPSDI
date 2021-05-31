@@ -6,7 +6,7 @@ using Random
 using LinearAlgebra
 
 tmp = push!(LOAD_PATH, pwd() * "/Code")
-using MyPkg
+using PEPSDI
 
 include(pwd() * "/Code/Models/Model_sde.jl")
 include(pwd() * "/Code/Models/Model1_SSA.jl")

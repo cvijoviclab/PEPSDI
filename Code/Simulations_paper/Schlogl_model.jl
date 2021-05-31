@@ -64,17 +64,6 @@ function schlogl_g(y_obs, y_mod, error_param, t, dim_obs)
     return exp(prob)
 end
 
-
-# P-matrix is the identity matrix here 
-P_mat = [1]
-sde_mod = init_sde_model(schlogl_alpha, 
-                         schlogl_beta, 
-                         schlogl_u0!, 
-                         schlogl_h, 
-                         schlogl_g, 
-                         1,         # Model dimension dim(X)  
-                         1,         # Dimension of observation model dim(Y)
-                         P_mat) 
     
 function run_inference_schlogl()
     
@@ -117,7 +106,7 @@ function run_inference_schlogl()
     # Tuning of particles 
     tune_part_data = init_pilot_run_info(pop_param_info, 
                                          n_particles_pilot=500, 
-                                         n_samples_pilot=100, 
+                                         n_samples_pilot=5000, 
                                          rho_list=[0.999], 
                                          n_times_run_filter=50, 
                                          init_kappa=log.([1.8e-1, 2.5e-4]))
@@ -135,7 +124,7 @@ function run_inference_schlogl()
         file_loc, my_model, filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt)
     
     exp_id = 1
-    n_samples = 100
+    n_samples = 500000
     tmp = run_PEPSDI_opt2(n_samples, pop_param_info, ind_param_info, file_loc, my_model, 
         filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=exp_id)
     
