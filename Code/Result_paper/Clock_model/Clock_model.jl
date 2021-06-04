@@ -59,7 +59,7 @@ function clock_g(y_obs, y_mod, error_param, t, dim_obs)
 end
 
 
-function run_clock_model()
+function run_clock_model(run_pilot::Bool)
 
     rho = 0.0
 
@@ -104,19 +104,29 @@ function run_clock_model()
     kappa_sigma_sampler_opt = init_kappa_sigma_sampler_opt(KappaSigmaNormal())
 
     # Options for pilot-run 
-    tune_part_data = init_pilot_run_info(pop_param_info, n_particles_pilot=500, n_samples_pilot=3000, 
+    tune_part_data = init_pilot_run_info(pop_param_info, n_particles_pilot=2000, n_samples_pilot=5000, 
         rho_list=[0.0], n_times_run_filter=100, init_sigma = [0.2], init_mean=log.([2.0, 35.0, 1.0, 2.0]))
         
+    if run_pilot == true
+        tune_particles_opt2(tune_part_data, pop_param_info, ind_param_info, 
+            file_loc, my_model, filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt)
+    end
     
-    tune_particles_opt2(tune_part_data, pop_param_info, ind_param_info, 
-        file_loc, my_model, filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt)
-    
-    exp_id = 1
-    n_samples = 50000
-    tmp = run_PEPSDI_opt2(n_samples, pop_param_info, ind_param_info, file_loc, my_model, 
-        filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=exp_id)
+    if run_pilot == false
+        exp_id = 1
+        n_samples = 50000
+        tmp = run_PEPSDI_opt2(n_samples, pop_param_info, ind_param_info, file_loc, my_model, 
+            filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=exp_id)
+    end
 
 end
 
 
-run_clock_model()
+if ARGS[1] == "Run_pilot"
+    run_clock_model(true)
+
+elseif ARGS[1] == "Run_inference"
+    run_clock_model(false)
+
+end
+
