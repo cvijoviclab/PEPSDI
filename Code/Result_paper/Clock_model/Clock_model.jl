@@ -117,7 +117,7 @@ function run_clock_model(run_pilot::Bool)
         n_samples = 50000
         tmp = run_PEPSDI_opt2(n_samples, pop_param_info, ind_param_info, file_loc, my_model, 
             filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=exp_id)
-    end
+    endn
 
 end
 
