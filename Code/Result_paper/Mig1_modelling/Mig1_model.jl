@@ -1,9 +1,24 @@
+#= 
+    Running the inference for the Mig1-model. The inference is performed using the 
+    tau-leaping simulator, with a small step-lenght 5e-3 to account for stiff-dynamics. 
+    
+        ARGS[1]: Model structure to run (Model_1A, Model_1B, Model_2A, Model_2B) (see paper)
+        ARGS[2]: Exp-id, while pilot run to run (or to launch main inference run from)
+=# 
+
 using Random 
 using Distributions
 using LinearAlgebra
 tmp = push!(LOAD_PATH, pwd() * "/Code")
 using PEPSDI
 
+
+if length(ARGS) != 2
+    println("Error: Number of input arugments should be 2, not $length(ARGS)")
+end
+
+
+pilot_id = parse(Int64, ARGS[2])
 
 # Propensity vector for model 1A in the paper 
 function hvec_1A_mod(u, h_vec, p, t)
@@ -180,12 +195,12 @@ end
 # Calculate observation, y, for model structure 1
 function calc_obs_struct1(y, u, p, t)
 
-    y[1] = log(u[2] / u[1])
+    y[1] = u[2] / u[1]
 end
 # Calculate observation, y, for model structure 2 
 function calc_obs_struct2(y, u, p, t)
 
-    y[1] = log(u[3] / u[2])
+    y[1] = u[3] / u[2]
 end
 
 
@@ -200,7 +215,7 @@ function model_prob_obs(y_obs, y_mod, error_param, t, dim_obs)
 end
 
 
-function model_1A(n_samples; pilot=false)
+function model_1A(n_samples; pilot=false, exp_id=1)
 
     
     S_left = convert(Array{Int16, 2}, [1 0 0; 0 0 0; 0 0 1; 0 1 1; 0 1 0; 1 0 0])
@@ -230,8 +245,8 @@ function model_1A(n_samples; pilot=false)
         log_scale=true, pos_param=false)
 
     # Observed data
-    path_data = pwd() * "/Intermediate/Experimental_data/Data_fructose/Fructose_data_log.csv"
-    file_loc = init_file_loc(path_data, "Mig1_mod_1A_log", multiple_ind=true, cov_name = ["fruc"], cov_val=[2.0, 0.05], dist_id=[1, 31])
+    path_data = pwd() * "/Intermediate/Experimental_data/Data_fructose/Fructose_data.csv"
+    file_loc = init_file_loc(path_data, "Mig1_mod_1A", multiple_ind=true, cov_name = ["fruc"], cov_val=[2.0, 0.05], dist_id=[1, 31])
 
     # Filter options 
     dt = 5e-3; rho = 0.999
@@ -256,14 +271,14 @@ function model_1A(n_samples; pilot=false)
         return 0
     else
         stuff = run_PEPSDI_opt2(n_samples, pop_param_info, ind_param_info, file_loc, my_model, 
-            filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=1)
+            filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=exp_id)
         return stuff
     end
 
 end
 
 
-function model_1B(n_samples; pilot=false)
+function model_1B(n_samples; pilot=false, exp_id = 1)
 
     
     S_left = convert(Array{Int16, 2}, [1 0 0; 0 0 0; 0 0 1; 0 1 1; 0 1 0; 1 0 0])
@@ -296,8 +311,8 @@ function model_1B(n_samples; pilot=false)
     ind_param_info = init_ind_param_info("mean", 4, log_scale=true, pos_param=false)
 
     # Observed data
-    path_data = pwd() * "/Intermediate/Experimental_data/Data_fructose/Fructose_data_log.csv"
-    file_loc = init_file_loc(path_data, "Mig1_mod_1B_log", multiple_ind=true, cov_name = ["fruc"], cov_val=[2.0, 0.05], dist_id=[1, 31])
+    path_data = pwd() * "/Intermediate/Experimental_data/Data_fructose/Fructose_data.csv"
+    file_loc = init_file_loc(path_data, "Mig1_mod_1B", multiple_ind=true, cov_name = ["fruc"], cov_val=[2.0, 0.05], dist_id=[1, 31])
 
     # Filter options 
     dt = 5e-3; rho = 0.999
@@ -328,14 +343,14 @@ function model_1B(n_samples; pilot=false)
         return 0
     else
         stuff = run_PEPSDI_opt2(n_samples, pop_param_info, ind_param_info, file_loc, my_model, 
-            filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=1)
+            filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=exp_id)
         return stuff
     end
 
 end
 
 
-function model_2A(n_samples; pilot=false)
+function model_2A(n_samples; pilot=false, exp_id = 1)
 
     
     S_left = convert(Array{Int16, 2}, [0 0 0 0; 0 0 0 0; 1 1 0 0; 0 0 0 1; 0 0 1 1; 0 0 1 0; 0 1 0 0; 1 0 0 0])
@@ -368,8 +383,8 @@ function model_2A(n_samples; pilot=false)
         log_scale=true, pos_param=false)
 
     # Observed data
-    path_data = pwd() * "/Intermediate/Experimental_data/Data_fructose/Fructose_data_log.csv"
-    file_loc = init_file_loc(path_data, "Mig1_mod_2A_log", multiple_ind=true, cov_name = ["fruc"], cov_val=[2.0, 0.05], dist_id=[1, 31])
+    path_data = pwd() * "/Intermediate/Experimental_data/Data_fructose/Fructose_data.csv"
+    file_loc = init_file_loc(path_data, "Mig1_mod_2A", multiple_ind=true, cov_name = ["fruc"], cov_val=[2.0, 0.05], dist_id=[1, 31])
 
     # Filter options 
     dt = 5e-3; rho = 0.999
@@ -394,16 +409,16 @@ function model_2A(n_samples; pilot=false)
         return 0
     else
         stuff = run_PEPSDI_opt2(n_samples, pop_param_info, ind_param_info, file_loc, my_model, 
-            filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=1)
+            filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=exp_id)
         return stuff
     end
 
 end
 
 
-function model_2B(n_samples; pilot=false)
+function model_2B(n_samples; pilot=false, exp_id=1)
 
-    
+
     S_left = convert(Array{Int16, 2}, [0 0 0 0; 0 0 0 0; 1 1 0 0; 0 0 0 1; 0 0 1 1; 0 0 1 0; 0 1 0 0; 1 0 0 0])
     S_right = convert(Array{Int16, 2}, [1 0 0 0; 0 0 0 1; 1 0 1 0; 0 0 0 0; 0 1 0 1; 0 1 0 0; 0 0 1 0; 0 0 0 0])
     my_model = PoisonModel(hvec_2B_mod, 
@@ -437,7 +452,7 @@ function model_2B(n_samples; pilot=false)
         log_scale=true, pos_param=false)
 
     # Observed data
-    path_data = pwd() * "/Intermediate/Experimental_data/Data_fructose/Fructose_data_log.csv"
+    path_data = pwd() * "/Intermediate/Experimental_data/Data_fructose/Fructose_data.csv"
     file_loc = init_file_loc(path_data, "Mig1_mod_2B_log", multiple_ind=true, cov_name = ["fruc"], cov_val=[2.0, 0.05], dist_id=[1, 31])
 
     # Filter options 
@@ -469,7 +484,7 @@ function model_2B(n_samples; pilot=false)
         return 0
     else
         stuff = run_PEPSDI_opt2(n_samples, pop_param_info, ind_param_info, file_loc, my_model, 
-            filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=1)
+            filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=exp_id)
         return stuff
     end
 
@@ -478,26 +493,23 @@ end
 
 if ARGS[1] == "Model_1A"
     model_1A(100; pilot=true)
-    model_1A(40000; pilot=false)
+    model_1A(40000; pilot=false, exp_id=pilot_id)
 end
 
 
 if ARGS[1] == "Model_1B"
     model_1B(100; pilot=true)
-    model_1B(40000; pilot=false)
+    model_1B(40000; pilot=false, exp_id=pilot_id)
 end
 
 
 if ARGS[1] == "Model_2A"
     model_2A(100; pilot=true)
-    model_2A(40000; pilot=false)
+    model_2A(40000; pilot=false, exp_id=pilot_id)
 end
 
 
 if ARGS[1] == "Model_2B"
     model_2B(100; pilot=true)
-    model_2B(10000; pilot=false)
+    model_2B(10000; pilot=false, exp_id=pilot_id)
 end
-
-
-
