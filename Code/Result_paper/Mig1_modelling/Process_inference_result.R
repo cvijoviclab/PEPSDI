@@ -16,6 +16,8 @@ BASE_WIDTH <- 7.0
 dir_save <- "../../../Results/Paper_figures/Fig6/"
 if(!dir.exists(dir_save)) dir.create(dir_save)
 
+dir_save_supp <- str_c(dir_save, "Supp_fig/")
+if(!dir.exists(dir_save_supp)) dir.create(dir_save_supp)
 
 data_obs <- read_csv(str_c("../../../Intermediate/Experimental_data/Data_fructose/Fructose_data.csv"), col_types = cols()) %>%
   mutate(fruc = as.factor(fruc), id = as.factor(id))
@@ -88,13 +90,10 @@ p <- ggplot(pvc_sim, aes(time)) +
   my_theme + theme(legend.position = "none")
 
 
-dir_save_supp <- str_c(dir_save, "Supp_fig/")
-if(!dir.exists(dir_save_supp)) dir.create(dir_save_supp)
-
 ggsave(str_c(dir_save_supp, "Pvc_large_005.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 
 
-## Data for small model-structure 
+## Data for small model-structure (network structure 1)
 path_pvc_kappa_small <- "../../../Intermediate/Multiple_individuals/Mig1_mod_1A/Ram_sampler/Npart100_nsamp40000_corr0.999_exp_id4_run1/Pvc_quantfruc2.0.csv"
 path_pvc_diff_small <- "../../../Intermediate/Multiple_individuals/Mig1_mod_1B/Ram_sampler/Npart100_nsamp40000_corr0.999_exp_id4_run1/Pvc_quantfruc2.0.csv"
 
@@ -176,7 +175,7 @@ p <- ggplot(data_scale) +
   geom_rangeframe(data=range_data, mapping=aes(x), size = 1.0) + 
   xlim(0, 2.4) + 
   labs(x = "", y = "") + 
-  my_theme
+  my_theme + theme(text = element_text(size = 30))
 ggsave(str_c(dir_save, "Marg_scale1.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 
 range_data <- tibble(x = c(0.0, 2.6))
@@ -186,13 +185,12 @@ p <- ggplot(data_scale) +
   geom_rangeframe(data=range_data, mapping=aes(x), size = 1.0) + 
   xlim(0, 2.6) + 
   labs(x = "", y = "") + 
-  my_theme
+  my_theme +  theme(text = element_text(size = 30))
 ggsave(str_c(dir_save, "Marg_scale2.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
-
 
 data_mean <- read_csv(str_c(dir_best, "Mean.csv"), col_types = cols()) %>%
   mutate(sample = 1:40000) %>%
-  filter(sample > 5000)
+  filter(sample > 10000)
 range_data <- tibble(x = c(-1, 3.5))
 p <- ggplot(data_mean) + 
   geom_density(aes(mu3), linetype = 1, size = 2.0, color = "#EBD5A3") + 
@@ -200,7 +198,7 @@ p <- ggplot(data_mean) +
   geom_rangeframe(data=range_data, mapping=aes(x), size = 1.0) + 
   xlim(-1, 3.5) + 
   labs(x = "", y = "") + 
-  my_theme
+  my_theme +  theme(text = element_text(size = 30))
 ggsave(str_c(dir_save, "Marg_mean2.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 
 range_data <- tibble(x = c(4.5, 7))
@@ -210,7 +208,7 @@ p <- ggplot(data_mean) +
   geom_rangeframe(data=range_data, mapping=aes(x), size = 1.0) + 
   xlim(4.5, 7) + 
   labs(x = "", y = "") + 
-  my_theme
+  my_theme + theme(text = element_text(size = 30))
 ggsave(str_c(dir_save_supp, "Marg_mean1.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 
 data_corr <- read_csv(str_c(dir_best, "Corr.csv"), col_types = cols()) 
@@ -235,12 +233,11 @@ p <- ggplot(corr_tibble, aes(c12)) +
   labs(x = "", y = "") + 
   geom_rangeframe(data=range_data, mapping=aes(x), size = 1.0) + 
   xlim(0.25, 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 30))
 ggsave(str_c(dir_save, "Marg_corr.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 
 
-calc_std <- function(mu, sigma) return(sqrt((exp(mu)^2 - 1) * exp(2*mu + sigma^2) ))
-calc_mean <- function(mu, sigma) return(exp(mu + sigma^2 / 2) )
+# To calculate coefficient of variation for log-normal distribution 
 calc_cv <- function(mu, sigma) return(sqrt(exp(sigma^2) - 1 ))
 
 # Plot coefficent of variation 
@@ -259,23 +256,24 @@ p1 <- ggplot(data_coeff_var) +
   geom_rangeframe(data=range_data, mapping=aes(x), size = 1.0) + 
   xlim(0, 4) + 
   labs(x = "", y = "") + 
-  my_theme
+  my_theme + theme(text = element_text(size = 30))
 
-range_data <- tibble(x = c(0.0, 5.0))
+range_data <- tibble(x = c(0.0, 6.0))
 p2 <- ggplot(data_coeff_var) + 
   geom_density(aes(coeff_var2a), linetype = 1, size = 2.0, color = "#86A8BF") + 
   geom_density(aes(coeff_var2b), linetype = 2, size = 2.0, color = "#86A8BF") + 
-  xlim(0, 5) + 
+  xlim(0, 6) + 
   geom_rangeframe(data=range_data, mapping=aes(x), size = 1.0) + 
   labs(x = "", y = "") + 
-  my_theme
+  my_theme + theme(text = element_text(size = 30))
 
 ggsave(str_c(dir_save, "Cv1.svg"), p1, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 ggsave(str_c(dir_save, "Cv2.svg"), p2, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 
 # Plot no correlation case 
-path_pvc_diff_large <- "../../Intermediate/Multiple_individuals/Frc_data_large_diff/Ram_sampler/Npart100_nsamp40000_corr0.999_exp_id1_run2/Pvc_quantfruc2.0_no_corr.csv"
-pvc_diff <- read_csv(path_pvc_diff_large, col_types = cols()) %>%
+path_pvc_nor_corr <- str_c("../../../Intermediate/Multiple_individuals/Mig1_mod_2B/Ram_sampler/Npart100_nsamp40000_corr0.999_exp_id4_run1/",
+                             "pred/no_corr/Ram_sampler/Pvc_quantfruc2.0.csv")
+pvc_no_corr <- read_csv(path_pvc_nor_corr, col_types = cols()) %>%
   mutate(data_set = "diff")
 
 data_obs_sum <- data_obs %>%
@@ -300,40 +298,39 @@ p <- ggplot(pvc_diff, aes(time)) +
   geom_rangeframe(data=range_data, mapping=aes(x, y), size = 1.0) + 
   labs(x = "", y = "") + 
   my_theme + theme(legend.position = "none")
-
 ggsave(str_c(dir_save, "No_corr.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 
 
-# Save the remaning parameters to the supp-figure 
+# Save the remaning parameters to the supp-figure (Fig. S5)
 p1 <- ggplot(corr_tibble, aes(c13)) + 
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") + 
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
 
 p2 <- ggplot(corr_tibble, aes(c14)) + 
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") + 
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
 
 p3 <- ggplot(corr_tibble, aes(c23)) + 
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") + 
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
 
 p4 <- ggplot(corr_tibble, aes(c24)) + 
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") + 
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
 
 p5 <- ggplot(corr_tibble, aes(c34)) + 
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") + 
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
 
 ggsave(str_c(dir_save_supp, "Corr_13.svg"), p1, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 ggsave(str_c(dir_save_supp, "Corr_14.svg"), p2, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
@@ -345,23 +342,23 @@ p1 <- ggplot(data_mean, aes(mu5)) +
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") +  
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
 p2 <- ggplot(data_mean, aes(mu6)) + 
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") +  
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
 
 p3 <- ggplot(data_scale, aes(scale5)) + 
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") +  
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
 p4 <- ggplot(data_scale, aes(scale6)) + 
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") +  
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
 
 ggsave(str_c(dir_save_supp, "Mu5.svg"), p1, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 ggsave(str_c(dir_save_supp, "Mu6.svg"), p2, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
@@ -377,25 +374,25 @@ p1 <- ggplot(data_kappa_sigma, aes(kappa1)) +
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") +  
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
 
 p2 <- ggplot(data_kappa_sigma, aes(kappa2)) + 
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") +  
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
   
 p3 <- ggplot(data_kappa_sigma, aes(kappa3)) + 
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") +  
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
 
 p4 <- ggplot(data_kappa_sigma, aes(kappa4)) + 
   geom_density(linetype = 1, size = 2.0, color = "#EBD5A3") + 
   labs(x = "", y = "") +  
   geom_rangeframe(size = 1.0) + 
-  my_theme
+  my_theme + theme(text = element_text(size = 40))
 
 ggsave(str_c(dir_save_supp, "Kappa1.svg"), p1, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 ggsave(str_c(dir_save_supp, "Kappa2.svg"), p2, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)

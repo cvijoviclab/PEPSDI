@@ -7,7 +7,6 @@
 =# 
 
 
-
 using Random 
 using Distributions
 using LinearAlgebra
@@ -120,10 +119,6 @@ function predict_c1_mig1_model()
 
     # Observed data
     path_data = pwd() * "/Intermediate/Experimental_data/Data_fructose/Fructose_data.csv"
-    dir_save = pwd() * "/Intermediate/Multiple_individuals/Mig1_mod_2B/Ram_sampler/Npart100_nsamp40000_corr0.999_exp_id4_run1/pred/c1/Ram_sampler"
-    if !isdir(dir_save)
-        mkpath(dir_save)
-    end
     file_loc = init_file_loc(path_data, "Mig1_mod_2B/Ram_sampler/Npart100_nsamp40000_corr0.999_exp_id4_run1/pred/c1/", multiple_ind=true, cov_name = ["fruc"], cov_val=[2.0, 0.05], dist_id=[1, 31])
 
     # Filter options 
@@ -185,15 +180,91 @@ function predict_c1_mig1_model()
         @views mcmc_chains.corr[:, :, i] .= data_corr[((i-1)*n_ind_param+1):(i*n_ind_param), 1:n_ind_param]
     end
 
-    @printf("Running pvc\n")
+    @printf("Running prediciton of c1\n")
 
-    cov_val = file_loc.cov_val
-    n_loops = length(file_loc.cov_val)
-    cov_val_name = file_loc.cov_name[1]
-    cov_tag = "_" * cov_val_name .* string.(cov_val)
+    i = 1
 
-    pvc_mixed(my_model, mcmc_chains, ind_data_arr, pop_param_info, ind_param_info_arr, 
-        file_loc, filter_opt, pop_sampler; n_runs=10000, cov_val=cov_val[1], name_cov=cov_val_name)
+    
+    burn_in = 0.2
+    n_runs = 132 * 10000
+
+    # Setup for drawing model parameters 
+    n_param = size(mcmc_chains.mean)[1]
+    n_samples = size(mcmc_chains.mean)[2]
+    min_sample_use = convert(Int, floor(n_samples*burn_in))
+    indices_use = min_sample_use:n_samples
+    n_samples_use = length(indices_use)
+    index_sample = rand(DiscreteUniform(1, n_samples_use), n_runs)
+    
+
+    # Array for holding model-parameters 
+    log_kappa = pop_param_info.log_pop_param_kappa
+    log_sigma = pop_param_info.log_pop_param_sigma
+    n_kappa_sigma = length(vcat(log_kappa, log_sigma))
+    sigma_index = [(i > length(log_kappa) ? true : false) for i in 1:n_kappa_sigma]
+    kappa_index = .!sigma_index
+
+    # Correct transformation of individual parameters 
+    log_ind_param = ind_param_info_arr[1].log_ind_param
+
+    # Mcmc-chains to draw for 
+    pop_mean = mcmc_chains.mean
+    pop_scale = mcmc_chains.scale
+    pop_corr = mcmc_chains.corr
+    pop_kappa = mcmc_chains.kappa_sigma[kappa_index, :]
+    pop_sigma = mcmc_chains.kappa_sigma[sigma_index, :]
+
+    # Array for model-parameters 
+    mod_param_arr = init_model_parameters_arr(ind_param_info_arr, pop_param_info, my_model, length(ind_data_arr), ind_data_arr)
+    model_param = mod_param_arr[1]
+    model_param.covariates .= 2.0
+    dist_id = 1
+
+    n_ind_param = length(ind_param_info_arr[1].log_ind_param)
+    ind_param_arr = Array{FLOAT, 2}(undef, (n_runs, n_ind_param))
+
+    val_save = Array{Float64, 2}(undef, (n_runs, 4))
+
+    # Selecting random samples from posterior 
+    i = 1
+    while i < n_runs
+
+        i_sample = indices_use[index_sample[i]]
+        mean_vec = pop_mean[:, i_sample]
+        scale_vec = pop_scale[:, i_sample]
+        corr_mat = pop_corr[:, :, i_sample]
+
+        dist_ind_param = calc_dist_ind_param(init_pop_param_curr(mean_vec, scale_vec, corr_mat), pop_sampler, dist_id)
+
+        # Draw new individual parameters and populate model-param-struct 
+        new_param = rand(dist_ind_param, 1)[:, 1]
+        map_sigma_to_mod_param_mixed!(model_param, log_sigma, pop_sigma[:, i_sample])
+        map_kappa_to_mod_param_mixed!(model_param, log_kappa, pop_kappa[:, i_sample])
+        update_ind_param_ind!(model_param.individual_parameters, new_param, log_ind_param)
+
+        u0_vec = Array{Int32, 1}(undef, my_model.dim)
+        my_model.calc_x0!(u0_vec, model_param.individual_parameters)
+
+        local t_vec, y_vec
+        try 
+            t_vec, y_vec = solve_poisson_model(my_model, (0.0, 15.0), model_param.individual_parameters, 5e-3)
+        catch
+            continue
+        end
+
+        # Save the relevant values
+        val_save[i, 1] = model_param.individual_parameters.c[1]
+        val_save[i, 2] = y_vec[3, 1000] / y_vec[2, 1000]
+        val_save[i, 3] = y_vec[3, 2000] / y_vec[2, 2000]
+        val_save[i, 4] = y_vec[3, end] / y_vec[2, end]
+
+        i += 1
+    end
+
+    data_save = convert(DataFrame, val_save)
+    rename!(data_save, ["c1", "t1", "t2", "t3"])
+    dir_save = pwd() * "/Intermediate/Multiple_individuals/Mig1_mod_2B/Ram_sampler/Npart100_nsamp40000_corr0.999_exp_id4_run1/"
+    CSV.write(dir_save * "Pred_c1.csv", data_save)
 
 end
 
