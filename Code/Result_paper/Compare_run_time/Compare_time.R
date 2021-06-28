@@ -16,7 +16,6 @@ cbPalette <- c(
 BASE_HEIGHT <- 5
 BASE_WIDTH <- 7.0
 
-
 dir_base <- "../../../Intermediate/Multiple_individuals/Schlogl_benchmark_time/"
 file_res <- list.files(dir_base)
 res_tibble <- tibble()
@@ -43,8 +42,6 @@ for(i in 1:length(file_res)){
   
   for(j in 1:length(file_list)){
     
-    print(case_i)
-    print(file_list[j])
     run_time_data <- as.numeric(read_csv(str_c(dir_files, file_list[j], "/Run_time.csv"), 
                                          col_types = cols())[1, 1])
     
@@ -55,7 +52,6 @@ for(i in 1:length(file_res)){
   }
   
 }
-
 
 dir_save <- "../../../Results/Paper_figures/Fig_s_time/"
 if(!dir.exists(dir_save)) dir.create(dir_save, recursive = T)
@@ -113,3 +109,31 @@ p <- ggplot(data_ratio, aes(n_ind, ratio_mean)) +
   labs(x = "", y = "") + 
   my_theme + theme(legend.position = "none")
 ggsave(str_c(dir_save, "Ratio_run_time.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
+
+# Extract the number of particles and print 
+for(i in 1:length(file_res)){
+  case_i <- file_res[i]
+  
+  # Extract relevant data 
+  n_ind <- as.integer(str_match(case_i, "N_ind(\\d+)_")[2])
+  rho <- as.numeric(str_match(case_i, "rho(\\d|.+)_")[2])
+  if(str_detect(case_i, "new")){
+    next
+  }else{
+
+  }
+  
+  list_files <- str_c(dir_base, case_i, "/Ram_sampler/Pilot_run_data/Exp_tag1/Tune_particles/Rho0d999.csv")
+  
+  if(!file.exists(list_files)) next 
+  if(rho != 0.999) next 
+  
+  data_part <- read_csv(list_files, col_types = cols())  
+  data_save <- tibble(n_part = as.numeric(data_part[1, ]), rho = rho, n_ind = n_ind)
+  
+  print(sprintf("N_part = %.3f, n_ind = %d", data_part[1, 1], n_ind))
+  
+}
+  
+
+
