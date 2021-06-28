@@ -18,11 +18,11 @@ PriorDist <- setClass("PriorDist", slots = list(dist="character", param="numeric
 dir_save <- "../../../Results/Paper_figures/Fig2/"
 if(!dir.exists(dir_save)) dir.create(dir_save)
 
-dir_res <- "../../../Intermediate/Multiple_individuals/Clock_model/Ram_sampler/Npart100_nsamp50000_corr0.0_exp_id1_run2/"
+dir_res <- "../../../Intermediate/Multiple_individuals/Clock_model/Ram_sampler/Npart1000_nsamp50000_corr0.0_exp_id1_run1/"
 
 data_mean <- read_csv(str_c(dir_res, "Mean.csv"), col_types = cols()) %>%
   mutate(sample = 1:50000) %>%
-  filter(sample > 10000 * 0.2) %>%
+  filter(sample > 10000 * 0.2) #%>%
   filter(mu1 > 0.5) %>%
   filter(mu2 > 2.5) %>%
   filter(mu3 < 2.0)
@@ -32,25 +32,25 @@ p1 <- ggplot(data_mean, aes(mu1)) +
   geom_rangeframe(size = 3.0, color = "black", linetype = 1) + 
   geom_vline(xintercept = log(3.0), size = 2.0) + 
   labs(x = "", y = "") + 
-  my_theme + theme(legend.position = "none")
+  my_theme + theme(legend.position = "none", text = element_text(size = 40))
 p2 <- ggplot(data_mean, aes(mu2)) + 
   geom_density(size = 3.0, color = my_colors[8]) + 
   geom_rangeframe(size = 3.0, color = "black", linetype = 1) + 
   geom_vline(xintercept = log(30.0), size = 2.0) + 
   labs(x = "", y = "") + 
-  my_theme + theme(legend.position = "none")
+  my_theme + theme(legend.position = "none", text = element_text(size = 40))
 p3 <- ggplot(data_mean, aes(mu3)) + 
   geom_density(size = 3.0, color = my_colors[8]) + 
   geom_rangeframe(size = 3.0, color = "black", linetype = 1) + 
   geom_vline(xintercept = log(3.0), size = 2.0) + 
   labs(x = "", y = "") + 
-  my_theme + theme(legend.position = "none")
+  my_theme + theme(legend.position = "none", text = element_text(size = 40))
 p4 <- ggplot(data_mean, aes(mu4)) + 
   geom_density(size = 3.0, color = my_colors[8]) + 
   geom_rangeframe(size = 3.0, color = "black", linetype = 1) + 
   geom_vline(xintercept = log(2.0), size = 2.0) + 
   labs(x = "", y = "") + 
-  my_theme + theme(legend.position = "none")
+  my_theme + theme(legend.position = "none", text = element_text(size = 40))
 
 ggsave(str_c(dir_save, "Mu1.svg"), p1, bg = "transparent", width = BASE_WIDTH-1, height = BASE_HEIGHT)
 ggsave(str_c(dir_save, "Mu2.svg"), p2, bg = "transparent", width = BASE_WIDTH-1, height = BASE_HEIGHT)
@@ -58,7 +58,7 @@ ggsave(str_c(dir_save, "Mu3.svg"), p3, bg = "transparent", width = BASE_WIDTH-1,
 ggsave(str_c(dir_save, "Mu4.svg"), p4, bg = "transparent", width = BASE_WIDTH-1, height = BASE_HEIGHT)
 
 data_scale <- read_csv(str_c(dir_res, "Scale.csv"), col_types = cols()) %>%
-  mutate(sample = 1:50000) %>%
+  mutate(sample = 1:50000) #%>%
   filter(sample > 10000 * 0.2) %>%
   filter(scale1 < 1.0) %>%
   filter(scale2 < 1) %>%
@@ -69,32 +69,32 @@ p1 <- ggplot(data_scale, aes(scale1)) +
   geom_rangeframe(size = 3.0, color = "black", linetype = 1) + 
   geom_vline(xintercept = 0.4, size = 2.0) + 
   labs(x = "", y = "") + 
-  my_theme + theme(legend.position = "none")
+  my_theme + theme(legend.position = "none", text = element_text(size = 40))
 p2 <- ggplot(data_scale, aes(scale2)) + 
   geom_density(size = 3.0, color = my_colors[8]) + 
   geom_rangeframe(size = 3.0, color = "black", linetype = 1) + 
   geom_vline(xintercept = 0.2, size = 2.0) + 
   labs(x = "", y = "") + 
-  my_theme + theme(legend.position = "none")
+  my_theme + theme(legend.position = "none", text = element_text(size = 40))
 p3 <- ggplot(data_scale, aes(scale3)) + 
   geom_density(size = 3.0, color = my_colors[8]) + 
   geom_rangeframe(size = 3.0, color = "black", linetype = 1) + 
   geom_vline(xintercept = 0.2, size = 2.0) + 
   labs(x = "", y = "") + 
-  my_theme + theme(legend.position = "none")
+  my_theme + theme(legend.position = "none", text = element_text(size = 40))
 p4 <- ggplot(data_scale, aes(scale4)) + 
   geom_density(size = 3.0, color = my_colors[8]) + 
   geom_rangeframe(size = 3.0, color = "black", linetype = 1) + 
   geom_vline(xintercept = 0.1, size = 2.0) + 
   labs(x = "", y = "") + 
-  my_theme + theme(legend.position = "none")
+  my_theme + theme(legend.position = "none", text = element_text(size = 40))
 
 ggsave(str_c(dir_save, "Scale1.svg"), p1, bg = "transparent", width = BASE_WIDTH-1, height = BASE_HEIGHT)
 ggsave(str_c(dir_save, "Scale2.svg"), p2, bg = "transparent", width = BASE_WIDTH-1, height = BASE_HEIGHT)
 ggsave(str_c(dir_save, "Scale3.svg"), p3, bg = "transparent", width = BASE_WIDTH-1, height = BASE_HEIGHT)
 ggsave(str_c(dir_save, "Scale4.svg"), p4, bg = "transparent", width = BASE_WIDTH-1, height = BASE_HEIGHT)
 
-path_data <-  "../../../Intermediate/Simulated_data/SSA/Multiple_ind/Clock/Clock.csv"
+  path_data <-  "../../../Intermediate/Simulated_data/SSA/Multiple_ind/Clock/Clock.csv"
 data_obs <- read_csv(path_data, col_types = cols(id = col_factor()))
 data_rand <- data_obs %>%
   filter(id %in% c(1, 19, 2, 32))
