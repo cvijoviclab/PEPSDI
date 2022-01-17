@@ -302,25 +302,15 @@ function run_PEPSDI_opt1(n_samples::T1,
     chain_current = gibbs_pop_param_warm_up(pop_par_current, pop_sampler, 
         pop_param_info, ind_param_current)
 
-    # Perform the mcmc-gibbs-sampling 
-    time1 = now() - now()
-    time2 = now() - now()
-    time3 = now() - now()   
-    
+    # Perform the mcmc-gibbs-sampling     
     start_time_sampler = now()
     @showprogress "Running sampler..." for i in 2:n_samples
 
         # Stage 1 gibbs 
-        start_time = now()
         gibbs_individual_parameters!(n_individuals, i)
-        end_time = now()
-        time1 += end_time - start_time 
 
         # Stage 2 gibbs
-        start_time = now()
         gibbs_kappa_sigma_parameters!(n_individuals, i)
-        end_time = now()
-        time2 = end_time - start_time
             
         # To guard against bad start-guess for ind_param_current re-tune NUTS-sampler
         if (i % 1000 == 0 || i == 100) && pilot == true
@@ -331,13 +321,10 @@ function run_PEPSDI_opt1(n_samples::T1,
         end
                 
         # Stage 3 gibbs (population parameters via nuts), redo-warm up every 100:th iteration to properly tune-NUTS 
-        start_time = now()
         chain_current = gibbs_pop_param!(pop_par_current, pop_sampler, chain_current, ind_param_current)
         mcmc_chains.mean[:, i] .= pop_par_current.mean_vec
         mcmc_chains.scale[:, i] .= pop_par_current.scale_vec
         mcmc_chains.corr[:, :, i] .= pop_par_current.corr_mat
-        end_time = now()
-        time3 += end_time - start_time
     end
 
     end_time_sampler = now()
@@ -347,12 +334,10 @@ function run_PEPSDI_opt1(n_samples::T1,
         write_result_file(mcmc_chains, n_samples, file_loc, filter_opt, pop_param_info, pilot_id, run_time_sampler)
     end
     if pilot == false && benchmark == false
-
+        @printf("Running posterior visual check...")
+        run_pvc_mixed(model, mcmc_chains, ind_data_arr, pop_param_info, ind_param_info_arr, file_loc, filter_opt, pop_sampler)
+        @printf("done\n")
     end
-    
-    println("Time 1: ", time1)
-    println("Time 2: ", time2)
-    println("Time 3: ", time3)
 
     return tuple(mcmc_chains, mcmc_sampler_ind_arr, mcmc_sampler_pop)
 end 

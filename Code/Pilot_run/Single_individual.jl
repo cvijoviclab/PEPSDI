@@ -342,7 +342,7 @@ function investigate_different_particles(n_times_run_filter,
             target_var = 2.16^2 / (1 - est_cor^2)
         end
 
-        @printf("N_particles = %d, est_var = %.3f, target_var = %.3f\n", particles_use, est_var, target_var)
+        #printf("N_particles = %d, est_var = %.3f, target_var = %.3f\n", particles_use, est_var, target_var)
         if target_var < est_var
             particles_use += 10
             times_correct = 0
@@ -552,7 +552,7 @@ function init_filter_pilot(filter_opt, file_loc, rho, sampler_name; exp_tag::T=1
 
     dir_file = file_loc.dir_save * tag_corr * tag_sampler * "Pilot_runs/" * "Exp_tag" * string(exp_tag) * "/"
     file_data = dir_file * "N_particles.tsv"
-    println(file_data)
+    
     n_particles_use = convert(Int64, readdlm(file_data, '\t', FLOAT, '\n')[1, 1])
 
     filter_use = change_filter_opt(filter_opt, n_particles_use, rho)

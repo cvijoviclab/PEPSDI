@@ -320,6 +320,7 @@ function check_if_pilot_exist(tune_part_data::TuneParticlesMixed, file_loc::File
                         [tune_part_data.n_samples_pilot], 
                         [tune_part_data.n_particles_pilot])
 
+
     for i in 1:n_row_file
         if sum(.!(data_info[i, 1:end-1] .== data_ind_vec)) == 0
             return true, convert(Int64, data_info[i, end])
@@ -878,6 +879,7 @@ function tune_particles_opt2(tune_part_data::TuneParticlesMixed,
 
     # Run pilot-run
     pilot_exist, exp_id = check_if_pilot_exist(tune_part_data, file_loc, sampler="alt")
+
     if !pilot_exist
         @printf("Running pilot run\n")
         exp_id = run_pilot_run(tune_part_data.n_samples_pilot, 

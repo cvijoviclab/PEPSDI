@@ -626,8 +626,6 @@ function run_mcmc(n_samples, mcmc_sampler, param_info, filter, model, file_loc;
     @printf("Running single individual inference with: ")
     @printf("%d particles and correlation level %.3f\n", n_particles, filter.rho)
 
-    @printf("Sampler, update_it = %.3f", mcmc_sampler.update_it)
-
     # Initialise the random numbers 
     rand_num_old = create_rand_num(ind_data, model, filter)
 

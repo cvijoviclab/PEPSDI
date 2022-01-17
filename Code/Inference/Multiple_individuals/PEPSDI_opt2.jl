@@ -421,7 +421,7 @@ function run_PEPSDI_opt2(n_samples::T1,
         model.calc_x0!(mod_param_arr[j].x0, mod_param_arr[j].individual_parameters)
     end
 
-    println("Starting to calculate likelihood :)")
+    println("Starting to calculate likelihood")
 
     # Acceptance probability arrays for single-individual parameters 
     log_lik_old::Array{FLOAT, 1} = Array{FLOAT, 1}(undef, n_individuals)
@@ -462,8 +462,7 @@ function run_PEPSDI_opt2(n_samples::T1,
     end    
         
     @printf("Log-likelihood starting value = %.3f\n", sum(log_lik_old))
-    println(log_lik_old)
-    
+
     # Warm up population nuts-sampler 
     chain_current = gibbs_pop_param_warm_up(pop_par_current, pop_sampler, 
         pop_param_info, ind_param_current)
@@ -471,18 +470,11 @@ function run_PEPSDI_opt2(n_samples::T1,
         pop_param_info, kappa_sigma_current)
 
     # Perform the mcmc-gibbs-sampling 
-    time1 = now() - now()
-    time2 = now() - now()
-    time3 = now() - now()   
-    
     start_time_sampler = now()
     @showprogress "Running sampler..." for i in 2:n_samples
 
         # Stage 1 gibbs 
-        start_time = now()
         gibbs_individual_parameters!(n_individuals, i)
-        end_time = now()
-        time1 += end_time - start_time 
 
         # To guard against bad start-guess for ind_param_current re-tune NUTS-sampler
         if (i % 1000 == 0 || i == 100) && pilot == true
@@ -497,8 +489,6 @@ function run_PEPSDI_opt2(n_samples::T1,
         end
                 
         # Stage 3 gibbs (population parameters via nuts), redo-warm up every 100:th iteration to properly tune-NUTS 
-        start_time = now()
-
         # Population parameters 
         chain_current = gibbs_pop_param!(pop_par_current, pop_sampler, chain_current, ind_param_current)
         mcmc_chains.mean[:, i] .= pop_par_current.mean_vec
@@ -508,9 +498,6 @@ function run_PEPSDI_opt2(n_samples::T1,
         # Kappa-sigma parameters 
         chain_kappa_sigma = gibbs_kappa_sigma!(kappa_sigma_mean, kappa_sigma_sampler, chain_kappa_sigma, pop_param_info, kappa_sigma_current)
         mcmc_chains.kappa_sigma[:, i] .= kappa_sigma_mean
-
-        end_time = now()
-        time3 += end_time - start_time
     end
 
     end_time_sampler = now()
@@ -524,9 +511,6 @@ function run_PEPSDI_opt2(n_samples::T1,
         run_pvc_mixed(model, mcmc_chains, ind_data_arr, pop_param_info, ind_param_info_arr, file_loc, filter_opt, pop_sampler)
         @printf("done\n")
     end
-
-    println("Time 1: ", time1)
-    println("Time 3: ", time3)
 
     return tuple(mcmc_chains, mcmc_sampler_ind_arr, mcmc_sampler_pop_arr)
 end 

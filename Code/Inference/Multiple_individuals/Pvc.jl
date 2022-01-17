@@ -86,7 +86,7 @@ function calc_t_vec_pcv(ind_data_arr, filter_opt::BootstrapFilterPois)
             t_max = maximum(ind_data_arr[i].t_vec)
         end
     end
-    dt = filter_opt.delta_t 
+    dt = filter_opt.delta_t / 2.0
     t_vec = 0.0:dt:t_max
 
     return t_vec, dt
@@ -295,7 +295,6 @@ function pvc_mixed(model,
         scale_vec = pop_scale[:, i_sample]
         corr_mat = pop_corr[:, :, i_sample]
 
-
         dist_ind_param = calc_dist_ind_param(init_pop_param_curr(mean_vec, scale_vec, corr_mat), pop_sampler, dist_id)
 
         # Draw new individual parameters and populate model-param-struct 
@@ -376,7 +375,9 @@ function pvc_mixed(model,
     if pvc_quant == false
         # Ensure directory for storing results exist 
         dir_save = file_loc.dir_save 
-        println("dir_save = $dir_save")
+        if !isdir(dir_save)
+            mkpath(dir_save)
+        end
         path_save = dir_save * "Pvc_" * name_cov * string(cov_val) * ".csv"
         full_data = vcat(quant, collect(t_vec)')'
         data_save = DataFrame(full_data)
@@ -533,7 +534,6 @@ function pvc_mixed_quant(model,
         col_names[i_start+8:i_start+9] .= std_tag
     end
     col_names[end] = "time"
-    print(path_save)
     rename!(data_save, col_names)
     CSV.write(path_save, data_save)
 

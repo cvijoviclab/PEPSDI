@@ -16,6 +16,7 @@ include(pwd() * "/Code/Models/Schlogl_ssa.jl")
 include(pwd() * "/Code/Models/Model_auto.jl")
 include(pwd() * "/Code/Models/Model_osc.jl")
 include(pwd() * "/Code/Models/Clock_model.jl")
+include(pwd() * "/Code/Models/Clock_fig1.jl")
 
 
 # Struct contianing simulation result for an individual.
@@ -308,6 +309,29 @@ if ARGS[1] == "Multiple_clock_extrande"
 end
 
 
+if ARGS[1] == "Multiple_clock_extrande_review"
+
+    println("Multiple clock extrande")
+    Random.seed!(1234)
+    S_left = convert(Array{Int16, 2}, [0 0; 1 0; 1 0; 0 1])
+    S_right = convert(Array{Int16, 2}, [1 0; 1 1; 0 0; 0 0])
+    my_model = ExtrandModel(clock_h_vec!, clock_h_vec_max!, clock_x0!, clock_obs, clock_prob_obs, 2, 1, 4, S_left - S_right)
+
+    scale_vec = [0.4, 0.2, 0.2, 0.1]
+    cor_mat = rand(LKJ(4, 3.0))
+    cov_mat = Diagonal(scale_vec) * cor_mat * Diagonal(scale_vec)
+    kappa_data = [[0.0], true]
+    eta_data = [log.([3.0, 30.0, 3.0, 2.0]), cov_mat, "normal", true]
+
+    println(cor_mat)
+
+    error_dist = Normal(0, 2)
+    t_vec_sim = 0.5:0.75:48
+    data_param = simulate_mult_ind(my_model, t_vec_sim, 60, eta_data, kappa_data, error_dist, "Clock_review", model_type="Extrande")
+
+end
+
+
 if ARGS[1] == "Multiple_clock_double"
 
     println("Multiple clock extrande")
@@ -374,3 +398,24 @@ if ARGS[1] == "Multiple_schlogl_benchmark"
     
 end 
 
+
+if ARGS[1] == "Clock_fig1"
+
+    println("Multiple clock1 extrande")
+    Random.seed!(12345)
+    S_left = convert(Array{Int16, 2}, [0 0; 1 0; 1 0; 0 1])
+    S_right = convert(Array{Int16, 2}, [1 0; 1 1; 0 0; 0 0])
+    my_model = ExtrandModel(clock_fig1_h_vec!, clock_fig1_h_vec_max!, clock_fig1_x0!, clock_fig1_obs, clock_fig1_prob_obs, 2, 1, 4, S_left - S_right)
+
+    scale_vec = [0.4, 0.2, 0.2, 0.1]
+    cor_mat = rand(LKJ(4, 3.0))
+    cov_mat = Diagonal(scale_vec) * cor_mat * Diagonal(scale_vec)
+    kappa_data = [[0.0], true]
+    eta_data = [log.([3.0, 30.0, 3.0, 0.5]), cov_mat, "normal", true]
+
+    println(cor_mat)
+
+    error_dist = Normal(0, 2)
+    t_vec_sim = 0.5:0.75:72
+    data_param = simulate_mult_ind(my_model, t_vec_sim, 40, eta_data, kappa_data, error_dist, "Clock_fig1", model_type="Extrande")
+end

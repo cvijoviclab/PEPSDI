@@ -59,7 +59,7 @@ function clock_g(y_obs, y_mod, error_param, t, dim_obs)
 end
 
 
-function run_clock_model(run_pilot::Bool)
+function run_clock_model(run_pilot::Bool; review::Bool=false)
 
     rho = 0.0
 
@@ -81,7 +81,6 @@ function run_clock_model(run_pilot::Bool)
     
     # Priors for ξ
     prior_sigma = [Normal(2.0, 0.5)]
-    
 
     pop_param_info = init_pop_param_info(prior_mean, prior_scale, prior_sigma, 
         prior_pop_corr=prior_corr)
@@ -92,6 +91,12 @@ function run_clock_model(run_pilot::Bool)
     # Data for 40 individuals 
     path_data = pwd() * "/Intermediate/Simulated_data/SSA/Multiple_ind/Clock/Clock.csv"
     file_loc = init_file_loc(path_data, "Clock_model", multiple_ind=true)
+
+    # Review using data for 100 individuals 
+    if review == true 
+        path_data = pwd() * "/Intermediate/Simulated_data/SSA/Multiple_ind/Clock_review/Clock_review_use.csv"
+        file_loc = init_file_loc(path_data, "Clock_model_review", multiple_ind=true)
+    end
 
     # Filter information, extrande filter here we cannot correlate particles
     filter_opt = init_filter(BootstrapExtrand())
@@ -117,16 +122,21 @@ function run_clock_model(run_pilot::Bool)
         n_samples = 50000
         tmp = run_PEPSDI_opt2(n_samples, pop_param_info, ind_param_info, file_loc, my_model, 
             filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=exp_id)
-    endn
-
+    end
 end
 
 
 if ARGS[1] == "Run_pilot"
     run_clock_model(true)
 
+elseif ARGS[1] == "Run_pilot_review"
+    run_clock_model(true, review=true)
+
 elseif ARGS[1] == "Run_inference"
     run_clock_model(false)
+
+elseif ARGS[1] == "Run_inference_review"
+    run_clock_model(false, review=true)
 
 end
 
