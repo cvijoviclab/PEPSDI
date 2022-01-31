@@ -18,11 +18,11 @@ PriorDist <- setClass("PriorDist", slots = list(dist="character", param="numeric
 dir_save <- "../../../Results/Paper_figures/Fig2/"
 if(!dir.exists(dir_save)) dir.create(dir_save)
 
-dir_res <- "../../../Intermediate/Multiple_individuals/Clock_model/Ram_sampler/Npart1000_nsamp50000_corr0.0_exp_id1_run1/"
+dir_res <- "../../../Intermediate/Multiple_individuals/Clock_model_review/Ram_sampler/Npart1000_nsamp50000_corr0.0_exp_id2_run1/"
 
 data_mean <- read_csv(str_c(dir_res, "Mean.csv"), col_types = cols()) %>%
   mutate(sample = 1:50000) %>%
-  filter(sample > 10000 * 0.2) #%>%
+  filter(sample > 10000 * 0.2) %>%
   filter(mu1 > 0.5) %>%
   filter(mu2 > 2.5) %>%
   filter(mu3 < 2.0)
@@ -58,7 +58,7 @@ ggsave(str_c(dir_save, "Mu3.svg"), p3, bg = "transparent", width = BASE_WIDTH-1,
 ggsave(str_c(dir_save, "Mu4.svg"), p4, bg = "transparent", width = BASE_WIDTH-1, height = BASE_HEIGHT)
 
 data_scale <- read_csv(str_c(dir_res, "Scale.csv"), col_types = cols()) %>%
-  mutate(sample = 1:50000) #%>%
+  mutate(sample = 1:50000) %>%
   filter(sample > 10000 * 0.2) %>%
   filter(scale1 < 1.0) %>%
   filter(scale2 < 1) %>%
@@ -94,7 +94,7 @@ ggsave(str_c(dir_save, "Scale2.svg"), p2, bg = "transparent", width = BASE_WIDTH
 ggsave(str_c(dir_save, "Scale3.svg"), p3, bg = "transparent", width = BASE_WIDTH-1, height = BASE_HEIGHT)
 ggsave(str_c(dir_save, "Scale4.svg"), p4, bg = "transparent", width = BASE_WIDTH-1, height = BASE_HEIGHT)
 
-  path_data <-  "../../../Intermediate/Simulated_data/SSA/Multiple_ind/Clock/Clock.csv"
+path_data <-  "../../../Intermediate/Simulated_data/SSA/Multiple_ind/Clock/Clock.csv"
 data_obs <- read_csv(path_data, col_types = cols(id = col_factor()))
 data_rand <- data_obs %>%
   filter(id %in% c(1, 19, 2, 32))
@@ -249,3 +249,42 @@ ggsave(str_c(dir_save, "Corr14.svg"), p3, bg = "transparent", width = BASE_WIDTH
 ggsave(str_c(dir_save, "Corr23.svg"), p4, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 ggsave(str_c(dir_save, "Corr24.svg"), p5, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 ggsave(str_c(dir_save, "Corr34.svg"), p6, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
+
+# Pair plots of the posterior parmaeters 
+data_pair <- data_mean %>%
+  bind_cols(data_scale) %>%
+  select(-starts_with("sample"))
+col_names <-colnames(data_pair)
+dir_pair1 <- str_c(dir_save, "Pair_plots/svg/")
+dir_pair2 <- str_c(dir_save, "Pair_plots/png/")
+if(!dir.exists(dir_pair1)) dir.create(dir_pair1, recursive = T)
+if(!dir.exists(dir_pair2)) dir.create(dir_pair2, recursive = T)
+
+for(i in 1:(dim(data_pair)[2]-1)){
+  for(j in (i+1):dim(data_pair)[2]){
+    
+    data_pair <- data_pair %>%
+      rename("v1" = col_names[i], "v2" = col_names[j])
+    
+    p <- ggplot(data_pair, aes(v1, v2)) + 
+      geom_density2d(color = my_colors[1], size=1.0) + 
+      labs(x = "", y = "") + 
+      my_theme
+    
+    name_save1 <- str_c(dir_pair1,  col_names[i], "_", col_names[j], ".svg")
+    name_save2 <- str_c(dir_pair2,  col_names[i], "_", col_names[j], ".png")
+    ggsave(name_save1, p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
+    ggsave(name_save2, p, width = BASE_WIDTH, height = BASE_HEIGHT, dpi=300)
+    
+    colnames(data_pair)[i] <- col_names[i]
+    colnames(data_pair)[j] <- col_names[j]
+  }
+}
+
+
+
+
+
+
+
+

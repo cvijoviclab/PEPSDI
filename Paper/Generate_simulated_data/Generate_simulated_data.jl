@@ -5,18 +5,15 @@ using Printf
 using Random
 using LinearAlgebra
 
-tmp = push!(LOAD_PATH, pwd() * "/Code")
+tmp = push!(LOAD_PATH, pwd() * "/src")
 using PEPSDI
 
-include(pwd() * "/Code/Models/Model_sde.jl")
-include(pwd() * "/Code/Models/Model1_SSA.jl")
-include(pwd() * "/Code/Models/Ornstein.jl")
-include(pwd() * "/Code/Models/Ornstein_mixed.jl")
-include(pwd() * "/Code/Models/Schlogl_ssa.jl")
-include(pwd() * "/Code/Models/Model_auto.jl")
-include(pwd() * "/Code/Models/Model_osc.jl")
-include(pwd() * "/Code/Models/Clock_model.jl")
-include(pwd() * "/Code/Models/Clock_fig1.jl")
+
+include(pwd() * "/Paper/Models/Ornstein.jl")
+include(pwd() * "/Paper/Models/Ornstein_mixed.jl")
+include(pwd() * "/Paper/Models/Schlogl_ssa.jl")
+include(pwd() * "/Paper/Models/Clock_model.jl")
+include(pwd() * "/Paper/Models/Clock_fig1.jl")
 
 
 # Struct contianing simulation result for an individual.
@@ -285,6 +282,30 @@ if ARGS[1] == "Multiple_schlogl_kappa_ssa"
     data_param = simulate_mult_ind(my_model, t_vec_sim, 40, eta_data, kappa_data, error_dist, "schlogl", model_type="SSA")
 end
 
+if ARGS[1] == "Multiple_schlogl_kappa_ssa_rev"
+
+    println("Multiple Schlogl kappa ssa rev")
+    # Simulate biological schlogl-model 
+    Random.seed!(321)
+    S_left = convert(Array{Int16, 2}, zeros(Int16, (4, 1)) .+ [2; 3; 0; 1])
+    S_right = convert(Array{Int16, 2}, zeros(Int16, (4, 1)) .+ [3; 2; 1; 0])
+    my_model = SsaModel(schlogl_h_vec!, 
+                        schlogl_x0!, 
+                        schlogl_obs_sde, 
+                        schlogl_prop_obs, 
+                        UInt16(1), UInt16(1), UInt16(4), S_left - S_right)
+
+    scale_vec = [0.1]
+    cor_mat = rand(LKJ(1, 0.1))
+    cov_mat = Diagonal(scale_vec) * cor_mat * Diagonal(scale_vec)
+    kappa_data = [[-2.17, -8.73], true]
+    eta_data = [[7.2], cov_mat, "normal", true]
+    error_dist = Normal(0, 2.0)
+    t_vec_sim = 1.0:0.5:50
+
+    data_param = simulate_mult_ind(my_model, t_vec_sim, 150, eta_data, kappa_data, error_dist, "schlogl_rev", model_type="SSA")
+end
+
 
 if ARGS[1] == "Multiple_clock_extrande"
 
@@ -419,3 +440,4 @@ if ARGS[1] == "Clock_fig1"
     t_vec_sim = 0.5:0.75:72
     data_param = simulate_mult_ind(my_model, t_vec_sim, 40, eta_data, kappa_data, error_dist, "Clock_fig1", model_type="Extrande")
 end
+

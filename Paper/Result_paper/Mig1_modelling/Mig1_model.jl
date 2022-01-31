@@ -9,16 +9,17 @@
 using Random 
 using Distributions
 using LinearAlgebra
-tmp = push!(LOAD_PATH, pwd() * "/Code")
+tmp = push!(LOAD_PATH, pwd() * "/src")
 using PEPSDI
 
-
+#=
 if length(ARGS) != 2
     println("Error: Number of input arugments should be 2, not $length(ARGS)")
 end
 
 
 pilot_id = parse(Int64, ARGS[2])
+=#
 
 # Propensity vector for model 1A in the paper 
 function hvec_1A_mod(u, h_vec, p, t)
@@ -163,6 +164,45 @@ function hvec_2B_mod(u, h_vec, p, t)
     h_vec[7] = c7 * Mig1c
     h_vec[8] = c8 * Reg1
 end
+function hvec_2B_mod_no_var(u, h_vec, p, t)
+    
+    c = p.c
+    kappa = p.kappa
+
+    c3 = kappa[1]
+    c4 = kappa[2]
+    c5 = kappa[3]
+    c8 = kappa[4]
+    Mig1c0 = c[1]
+    Mig1n0 = c[2]
+
+    if co_val == 2
+        c1 = kappa[7] 
+        c2 = kappa[8]
+    else
+        c1 = kappa[5] 
+        c2 = kappa[6]
+    end
+
+    if t <= 1.5
+        c1 *= 0.0
+        c2 *= 0.0
+    end
+
+    c6 = 40.0
+    c7 = c6 * Mig1n0 / Mig1c0
+
+    Reg1, Mig1c, Mig1n, X = u
+
+    h_vec[1] = c1 
+    h_vec[2] = c2 
+    h_vec[3] = c3 * Mig1c * Reg1
+    h_vec[4] = c4  * X
+    h_vec[5] = c5 * X * Mig1n
+    h_vec[6] = c6 * Mig1n
+    h_vec[7] = c7 * Mig1c
+    h_vec[8] = c8 * Reg1
+end
 
 
 # Calc initial values for model structure 1
@@ -184,6 +224,19 @@ function calc_x0_struct2(x0, p)
 
     Mig1c0 = c[3]
     Mig1n0 = c[4]
+
+    x0[1] = 0
+    x0[2] = round(Mig1c0)
+    x0[3] = round(Mig1n0)
+    x0[4] = 0
+end
+# Calc initial values for model structure 2 
+function calc_x0_no_var(x0, p)
+
+    c = p.c
+
+    Mig1c0 = c[1]
+    Mig1n0 = c[2]
 
     x0[1] = 0
     x0[2] = round(Mig1c0)
@@ -373,7 +426,6 @@ function model_2A(n_samples; pilot=false, exp_id = 1)
     prior_corr = LKJ(4, 0.1)
     prior_sigma = [Gamma(0.5, 0.5)]
 
-
     # Parameter information 
     pop_param_info = init_pop_param_info(prior_mean, prior_scale, prior_sigma, 
             prior_pop_corr=prior_corr, prior_pop_kappa=prior_kappa, log_pop_kappa=true, pos_pop_kappa=false, 
@@ -491,6 +543,68 @@ function model_2B(n_samples; pilot=false, exp_id=1)
 end
 
 
+function model_2B_no_var(n_samples; pilot=false, exp_id=1)
+
+
+    S_left = convert(Array{Int16, 2}, [0 0 0 0; 0 0 0 0; 1 1 0 0; 0 0 0 1; 0 0 1 1; 0 0 1 0; 0 1 0 0; 1 0 0 0])
+    S_right = convert(Array{Int16, 2}, [1 0 0 0; 0 0 0 1; 1 0 1 0; 0 0 0 0; 0 1 0 1; 0 1 0 0; 0 0 1 0; 0 0 0 0])
+    my_model = PoisonModel(hvec_2B_mod_no_var, 
+                           calc_x0_no_var, 
+                           calc_obs_struct2, 
+                           model_prob_obs,
+                           UInt16(4), UInt16(1), UInt16(8), S_left - S_right)
+
+    prior_mean = [Normal(7.3, 0.2),
+                  Normal(4.6, 0.2)]
+    prior_scale = [Gamma(0.3, 0.3),
+                   Gamma(0.3, 0.3)]
+    prior_sigma = [Gamma(0.3, 0.3)]
+    prior_corr = LKJ(2, 0.1)    
+                  
+    prior_kappa = [Normal(-4, 3.0), Normal(-6, 3.0), Normal(0.0, 3), Normal(-0.28, 0.5), 
+                   Normal(6.9, 0.5), Normal(2.0, 3.0), Normal(7.3, 0.5), Normal(2.0, 3.0)]
+
+    # Parameter information 
+    pop_param_info = init_pop_param_info(prior_mean, prior_scale, prior_sigma, 
+            prior_pop_corr=prior_corr, prior_pop_kappa=prior_kappa, log_pop_kappa=true, pos_pop_kappa=false, 
+            init_pop_kappa = log.([0.00922, 0.00205, 1.18, 0.65, 900, 9.12, 1200, 9.12]),
+            init_pop_mean = log.([1500, 55.9]))
+    ind_param_info = init_ind_param_info("mean", 2, log_scale=true, pos_param=false)
+
+    # Observed data
+    path_data = pwd() * "/Intermediate/Experimental_data/Data_fructose/Fructose_data.csv"
+    file_loc = init_file_loc(path_data, "Mig1_mod_2B_no_var", multiple_ind=true, cov_name = ["fruc"], cov_val=[2.0, 0.05], dist_id=[1, 31])
+
+    # Filter options 
+    dt = 5e-3; rho = 0.999
+    filter_opt = init_filter(BootstrapPois(), dt, n_particles=100, rho=rho)
+
+    # Sampler options 
+    cov_mat = diagm([0.01, 0.01])
+    cov_mat_pop = diagm([0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.01])
+    mcmc_sampler_ind = init_mcmc(RamSampler(), ind_param_info, cov_mat = cov_mat, step_before_update=200)
+    mcmc_sampler_pop = init_mcmc(RamSampler(), pop_param_info, cov_mat=cov_mat_pop, step_before_update=200)
+    kappa_sigma_sampler_opt = init_kappa_sigma_sampler_opt(KappaSigmaNormal(), variances=[0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.0001])
+    pop_sampler_opt = init_pop_sampler_opt(PopNormalLKJ(), n_warm_up=50)
+
+    # Tuning of particles 
+    tune_part_data = init_pilot_run_info(pop_param_info, n_particles_pilot=200, n_samples_pilot=1500, 
+        rho_list=[0.999], n_times_run_filter=40)
+
+    if pilot == true
+        tune_particles_opt2(tune_part_data, pop_param_info, ind_param_info, 
+            file_loc, my_model, filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt)
+
+        return 0
+    else
+        stuff = run_PEPSDI_opt2(n_samples, pop_param_info, ind_param_info, file_loc, my_model, 
+            filter_opt, mcmc_sampler_ind, mcmc_sampler_pop, pop_sampler_opt, kappa_sigma_sampler_opt, pilot_id=exp_id)
+        return stuff
+    end
+
+end
+
+
 if ARGS[1] == "Model_1A"
     model_1A(100; pilot=true)
     model_1A(40000; pilot=false, exp_id=pilot_id)
@@ -513,3 +627,10 @@ if ARGS[1] == "Model_2B"
     model_2B(100; pilot=true)
     model_2B(10000; pilot=false, exp_id=pilot_id)
 end
+
+
+if ARGS[1] == "model_2B_no_var"
+    model_2B_no_var(100; pilot=true)
+    model_2B_no_var(10000; pilot=false, exp_id=pilot_id)
+end
+

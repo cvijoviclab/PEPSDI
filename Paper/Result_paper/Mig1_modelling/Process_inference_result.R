@@ -161,12 +161,35 @@ p <- ggplot(pvc_sim, aes(time)) +
 ggsave(str_c(dir_save_supp, "Pvc_small_05.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 
 
+# Pvc no variance case 
+path_pvc_2_no_var <- "../../../Intermediate/Multiple_individuals/Mig1_mod_2B_no_var/Ram_sampler/Npart500_nsamp40000_corr0.999_exp_id4_run1/Pvc_quantfruc0.05.csv"
+
+pvc_sim <- read_csv(path_pvc_2_no_var, col_types = cols()) 
+data_obs_sum <- data_obs %>%
+  filter(fruc == 2.0) %>%
+  group_by(time) %>%
+  summarise(median = median(obs), 
+            quant95 = quantile(obs, 0.95), 
+            quant05 = quantile(obs, 0.05))
+p <- ggplot(pvc_sim, aes(time)) + 
+  geom_ribbon(aes(ymin = y1_med_low, ymax = y1_med_upp), alpha = .4) + 
+  geom_ribbon(aes(ymin = y1_qu05_low, ymax = y1_qu05_upp), alpha = .4) + 
+  geom_ribbon(aes(ymin = y1_qu95_low, ymax = y1_qu95_upp), alpha = .4) +
+  geom_line(data=data_obs_sum, mapping=aes(time, median), size = 1.0) + 
+  geom_line(data=data_obs_sum, mapping=aes(time, quant95), size = 1.0) + 
+  geom_line(data=data_obs_sum, mapping=aes(time, quant05), size = 1.0) +
+  scale_color_manual(values = my_col) + 
+  scale_fill_manual(values = my_col) + 
+  labs(x = "", y = "") + 
+  my_theme + theme(legend.position = "none")
+
+
 # For the best inference run 
-dir_best <- "../../../Intermediate/Multiple_individuals/Mig1_mod_2B/Ram_sampler/Npart100_nsamp40000_corr0.999_exp_id4_run1/"
+dir_best <- "../../../Intermediate/Multiple_individuals/Mig1_mod_2B_old/Ram_sampler/Npart100_nsamp40000_corr0.999_exp_id4_run1/"
 
 data_scale <- read_csv(str_c(dir_best, "Scale.csv"), col_types = cols()) %>%
   mutate(sample = 1:40000) %>%
-  filter(sample > 10000)
+  filter(sample > 0)
 
 range_data <- tibble(x = c(0.0, 2.4))
 p <- ggplot(data_scale) + 
@@ -190,7 +213,7 @@ ggsave(str_c(dir_save, "Marg_scale2.svg"), p, bg = "transparent", width = BASE_W
 
 data_mean <- read_csv(str_c(dir_best, "Mean.csv"), col_types = cols()) %>%
   mutate(sample = 1:40000) %>%
-  filter(sample > 10000)
+  filter(sample > 0)
 range_data <- tibble(x = c(-1, 3.5))
 p <- ggplot(data_mean) + 
   geom_density(aes(mu3), linetype = 1, size = 2.0, color = "#EBD5A3") + 
@@ -208,7 +231,7 @@ p <- ggplot(data_mean) +
   geom_rangeframe(data=range_data, mapping=aes(x), size = 1.0) + 
   xlim(4.5, 7) + 
   labs(x = "", y = "") + 
-  my_theme + theme(text = element_text(size = 30))
+  my_theme + theme(text = element_text(size = 35))
 ggsave(str_c(dir_save_supp, "Marg_mean1.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 
 data_corr <- read_csv(str_c(dir_best, "Corr.csv"), col_types = cols()) 
@@ -225,7 +248,6 @@ for(i in 1:n_corr_param-1){
     corr_tibble[str_c("c", as.character(i), as.character(j))] <- data_corr[index_choose, j]
   }
 }
-
 
 range_data <- tibble(x = c(0.25,  1.0))
 p <- ggplot(corr_tibble, aes(c12)) + 
@@ -246,7 +268,7 @@ data_coeff_var <- data_mean %>%
   bind_cols(data_scale) %>%
   mutate(coeff_var1a = calc_cv(mu1, scale1)) %>%
   mutate(coeff_var1b = calc_cv(mu2, scale2)) %>%
-   mutate(coeff_var2a = calc_cv(mu3, scale3)) %>%
+  mutate(coeff_var2a = calc_cv(mu3, scale3)) %>%
   mutate(coeff_var2b = calc_cv(mu4, scale4))
 
 range_data <- tibble(x = c(0.0, 4.0))
@@ -269,6 +291,39 @@ p2 <- ggplot(data_coeff_var) +
 
 ggsave(str_c(dir_save, "Cv1.svg"), p1, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 ggsave(str_c(dir_save, "Cv2.svg"), p2, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
+
+# Creating bivariate plots of inference result
+data_pair <- data_mean %>% 
+  bind_cols(data_scale) %>%
+  select(-starts_with("sample"))
+
+dir_pair1 <- str_c(dir_save, "Pair_plots/svg/")
+dir_pair2 <- str_c(dir_save, "Pair_plots/png/")
+col_names <-colnames(data_pair)
+if(!dir.exists(dir_pair1)) dir.create(dir_pair1, recursive = T)
+if(!dir.exists(dir_pair2)) dir.create(dir_pair2, recursive = T)
+for(i in 1:(dim(data_pair)[2]-1)){
+  for(j in (i+1):dim(data_pair)[2]){
+    
+    data_pair <- data_pair %>%
+      rename("v1" = col_names[i], "v2" = col_names[j])
+    
+    p <- ggplot(data_pair, aes(v1, v2)) + 
+      geom_density2d(color = my_colors[1], size=1.0) + 
+      labs(x = "", y = "") + 
+      my_theme
+    
+    name_save1 <- str_c(dir_pair1,  col_names[i], "_", col_names[j], ".svg")
+    name_save2 <- str_c(dir_pair2,  col_names[i], "_", col_names[j], ".png")
+    ggsave(name_save1, p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
+    ggsave(name_save2, p, width = BASE_WIDTH, height = BASE_HEIGHT, dpi=300)
+    
+    colnames(data_pair)[i] <- col_names[i]
+    colnames(data_pair)[j] <- col_names[j]
+  }
+}
+
+
 
 # Plot no correlation case 
 path_pvc_nor_corr <- str_c("../../../Intermediate/Multiple_individuals/Mig1_mod_2B/Ram_sampler/Npart100_nsamp40000_corr0.999_exp_id4_run1/",
@@ -398,3 +453,117 @@ ggsave(str_c(dir_save_supp, "Kappa1.svg"), p1, bg = "transparent", width = BASE_
 ggsave(str_c(dir_save_supp, "Kappa2.svg"), p2, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 ggsave(str_c(dir_save_supp, "Kappa3.svg"), p3, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 ggsave(str_c(dir_save_supp, "Kappa4.svg"), p4, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
+
+
+path_pvc_ssa <- str_c("../../../Intermediate/Multiple_individuals/Mig1_mod_2B/Ram_sampler/Npart100_nsamp40000_corr0.999_exp_id4_run1/",
+                           "pred/ssa/Ram_sampler/Pvc_quantfruc2.0.csv")
+data_ssa <- read_csv(path_pvc_ssa, col_types = cols())
+
+ggplot(data_ssa, aes(time)) + 
+  geom_ribbon(aes(ymin = y1_med_low, ymax = y1_med_upp), alpha = 0.2) + 
+  geom_ribbon(aes(ymin = y1_qu05_low, ymax = y1_qu05_upp), alpha = 0.2) + 
+  geom_ribbon(aes(ymin = y1_qu95_low, ymax = y1_qu95_upp), alpha = 0.2) + 
+  geom_line(data=data_obs_sum, mapping=aes(time, median), size = 1.0) + 
+  geom_line(data=data_obs_sum, mapping=aes(time, quant95), size = 1.0) + 
+  geom_line(data=data_obs_sum, mapping=aes(time, quant05), size = 1.0) +
+  my_theme
+
+# Process inference results for multiple 
+dir_res <- "../../../Intermediate/Multiple_individuals/Mig1_mode_2B_rev/Ram_sampler/"
+dirs_res <- list.files(dir_res)
+dirs_res <- dirs_res[dirs_res != "Pilot_run_data_alt"]
+dirs_res <- dirs_res[dirs_res != "Npart100_nsamp40000_corr0.999_exp_id4_run1_pred"]
+data_plot_tmp <- tibble()
+for(i in 1:length(dirs_res)){
+  dir_i <- dirs_res[i]
+  
+  exp_id <-as.integer(str_match(dir_i, "exp_id(\\d+)_")[2])
+  run <- as.integer(str_match(dir_i, "run(\\d+)")[2])
+  n_samples <- as.integer(str_match(dir_i, "nsamp(\\d+)_")[2])
+  
+  data_mean <- read_csv(str_c(dir_res, dir_i, "/Mean.csv"), col_types = cols())
+  data_scale <- read_csv(str_c(dir_res, dir_i, "/Scale.csv"), col_types = cols())
+  
+  data_corr <- read_csv(str_c(dir_res, dir_i, "/Corr.csv"), col_types = cols()) 
+  n_corr_param <- 4
+  corr_matrix <- matrix(0, nrow = n_samples, ncol = sum(seq(from = 1, by = 1, to = n_corr_param-1)))
+  corr_tibble <- tibble(samples = 1:n_samples)
+  for(i in 1:n_corr_param-1){
+    
+    if(i <= 0) next 
+    
+    for(j in (i+1):n_corr_param){
+      index_choose <- seq(from = i, by = n_corr_param, length.out = n_samples)
+      corr_tibble[str_c("c", as.character(i), as.character(j))] <- data_corr[index_choose, j]
+    }
+  }
+  
+  data_tmp <- data_mean %>%
+    bind_cols(corr_tibble, data_scale) %>%
+    mutate(run = run, exp_id = exp_id) %>%
+    filter(samples > 0)
+ 
+  data_plot_tmp <- data_plot_tmp %>%
+    bind_rows(data_tmp)
+}
+
+data_plot <- data_plot_tmp %>%
+  mutate(exp_id = as.factor(exp_id), run = as.factor(run)) %>%
+  filter(exp_id != 6) %>%
+  filter(exp_id != 9) %>%
+  filter(exp_id != 1) %>%
+  filter(exp_id != 10)
+  
+ggplot(data_plot, aes(c12, color = exp_id)) + 
+  geom_density(size = 1.5) + 
+  scale_color_manual(values = my_colors) + 
+  labs(x = "", y = "") + 
+  my_theme + theme(legend.position = "none")
+  
+data_coeff_var <- data_plot %>%
+  select(-samples) %>%
+  mutate(coeff_var1a = calc_cv(mu1, scale1)) %>%
+  mutate(coeff_var1b = calc_cv(mu2, scale2)) %>%
+  mutate(coeff_var2a = calc_cv(mu3, scale3)) %>%
+  mutate(coeff_var2b = calc_cv(mu4, scale4))
+
+ggplot(data_coeff_var, aes(color = exp_id)) + 
+  geom_density(aes(coeff_var1a), linetype = 1, size = 1.5) + 
+  geom_density(aes(coeff_var1b), linetype = 2, size = 1.5) +
+  xlim(0.0, 3.0) + 
+  labs(x = "", y = "") + 
+  scale_color_manual(values = my_colors) + 
+  my_theme + theme(legend.position = "none")
+
+ggplot(data_coeff_var, aes(color = exp_id)) + 
+  geom_density(aes(coeff_var2a), linetype = 1, size = 1.5) + 
+  geom_density(aes(coeff_var2b), linetype = 2, size = 1.5) +
+  xlim(0.0, 5.0) + 
+  labs(x = "", y = "") + 
+  scale_color_manual(values = my_colors) + 
+  my_theme + theme(legend.position = "none")
+
+ggplot(data_coeff_var, aes(color = exp_id)) + 
+  geom_density(aes(mu3), linetype = 1, size = 1.5) +  
+  geom_density(aes(mu4), linetype = 2, size = 1.5) + 
+  scale_color_manual(values = my_colors) + 
+  labs(x = "", y = "") + 
+  my_theme + theme(legend.position = "none")
+
+data_plot_new <- data_plot
+  
+ggplot(filter(data_plot_new, exp_id == 1), aes(samples, mu1)) + 
+  geom_line()
+p2 <- ggplot(filter(data_plot_new, exp_id == 2), aes(samples, mu1)) + 
+  geom_line()
+p3 <- ggplot(filter(data_plot_new, exp_id == 3), aes(samples, mu1)) + 
+  geom_line()
+ggpubr::ggarrange(p1, p2, p3, ncol = 3)
+
+
+ggplot(data_plot, aes(samples, mu2, color = exp_id)) +
+  geom_smooth(se = F)
+
+
+ggplot(data_plot, aes(mu1, mu3, color = exp_id)) + 
+  geom_density2d()

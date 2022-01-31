@@ -19,12 +19,12 @@ using DataFrames
 using LinearAlgebra
 using Printf
 using Dates
-tmp = push!(LOAD_PATH, pwd() * "/Code")
+tmp = push!(LOAD_PATH, pwd() * "/src")
 using PEPSDI
 
 
 # Load model equations to use 
-include(pwd() * "/Code/Models/Schlogl_ssa.jl")
+include(pwd() * "/Paper/Models/Schlogl_ssa.jl")
 
 
 # Sanity check input 

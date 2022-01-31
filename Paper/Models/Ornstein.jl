@@ -13,6 +13,11 @@ function beta_ornstein_full(du, u, p, t)
     c = p.c
     du[1, 1] = c[3]^2
 end
+# The code assumes a squared representation 
+function beta_ornstein_full_2(du, u, p, t)
+    c = p.c
+    du[1, 1] = c[3]
+end
 function prob_ornstein_full(y_obs, y_mod, error_param, t, dim_obs)
 
     error_dist = Normal(0.0, error_param[1])

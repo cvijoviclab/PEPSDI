@@ -8,7 +8,7 @@ using Distributions # For placing priors
 using Random # For setting seed 
 using LinearAlgebra # For matrix operations 
 using Plots
-tmp = push!(LOAD_PATH, pwd() * "/Code") # Push PEPSDI into load-path 
+tmp = push!(LOAD_PATH, pwd() * "/src") # Push PEPSDI into load-path 
 using PEPSDI # Load PEPSDI 
 
     

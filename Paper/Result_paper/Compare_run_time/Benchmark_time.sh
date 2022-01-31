@@ -18,47 +18,47 @@ run_schlogl_pilot_cluster ()
 
     echo "Tuning particles for new sampler"
 
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 20 new "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 40 new "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 60 new "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 80 new "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 100 new "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 200 new "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 20 new "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 40 new "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 60 new "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 80 new "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 100 new "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 200 new "true" &
 
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 20 new "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 40 new "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 60 new "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 80 new "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 100 new "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 200 new "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 20 new "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 40 new "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 60 new "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 80 new "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 100 new "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 200 new "true" &
 
     wait 
 
     echo "Tuning particles for old sampler"
 
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 20 old "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 40 old "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 60 old "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 80 old "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 100 old "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 20 old "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 40 old "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 60 old "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 80 old "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.999 100 old "true" &
 
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 20 old "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 40 old "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 60 old "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 80 old "true" &
-    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 100 old "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 20 old "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 40 old "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 60 old "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 80 old "true" &
+    /home/sebpe/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl 0.99 100 old "true" &
 
 }
 
 simulate_data_desktop ()
 {
 
-    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Code/Generate_simulated_data/Generate_simulated_data.jl Multiple_schlogl_benchmark 20 
-    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Code/Generate_simulated_data/Generate_simulated_data.jl Multiple_schlogl_benchmark 40 
-    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Code/Generate_simulated_data/Generate_simulated_data.jl Multiple_schlogl_benchmark 60 
-    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Code/Generate_simulated_data/Generate_simulated_data.jl Multiple_schlogl_benchmark 80 
-    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Code/Generate_simulated_data/Generate_simulated_data.jl Multiple_schlogl_benchmark 100 
-    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Code/Generate_simulated_data/Generate_simulated_data.jl Multiple_schlogl_benchmark 200 
+    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Paper/Generate_simulated_data/Generate_simulated_data.jl Multiple_schlogl_benchmark 20 
+    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Paper/Generate_simulated_data/Generate_simulated_data.jl Multiple_schlogl_benchmark 40 
+    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Paper/Generate_simulated_data/Generate_simulated_data.jl Multiple_schlogl_benchmark 60 
+    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Paper/Generate_simulated_data/Generate_simulated_data.jl Multiple_schlogl_benchmark 80 
+    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Paper/Generate_simulated_data/Generate_simulated_data.jl Multiple_schlogl_benchmark 100 
+    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Paper/Generate_simulated_data/Generate_simulated_data.jl Multiple_schlogl_benchmark 200 
     wait 
 
 }
@@ -74,7 +74,7 @@ run_timing_benchmark ()
 
     for (( i = 1; i <= $1; i++ )); do 
 
-        /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia --threads 2 ./Code/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl $2 $3 $4 "false" &
+        /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia --threads 2 ./Paper/Result_paper/Compare_run_time/Benchmark_times_schlögl.jl $2 $3 $4 "false" &
 
         if (( $i % 2 == 0 ));then 
             wait 

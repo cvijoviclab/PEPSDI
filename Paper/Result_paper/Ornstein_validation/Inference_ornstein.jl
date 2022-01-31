@@ -8,12 +8,12 @@ using Distributions # For placing priors
 using Random # For setting seed 
 using LinearAlgebra # For matrix operations 
 using Plots
-tmp = push!(LOAD_PATH, pwd() * "/Code") # Push PEPSDI into load-path 
+tmp = push!(LOAD_PATH, pwd() * "/src") # Push PEPSDI into load-path 
 using PEPSDI # Load PEPSDI 
 
 
 # Model equations 
-include(pwd() * "/Code/Models/Ornstein.jl")
+include(pwd() * "/Paper/Models/Ornstein.jl")
 
 
 # Run the validation for the Ornstein-uhlenbeck model using PEPSDI running option 1. 
@@ -120,5 +120,4 @@ if ARGS[1] == "PEPSDI_opt1"
 
 elseif ARGS[1] == "PEPSDI_opt2"
     run_ornstein_opt2()
-
 end

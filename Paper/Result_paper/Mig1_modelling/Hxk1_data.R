@@ -40,13 +40,12 @@ for(i in 1:n_row){
     bind_rows(data_tmp)
 }
 
-
 # Produce mean value between 240-480 min (short term hxk1-response)
 data_hxk_exp <- data_hxk_exp %>%
   filter(time > 240) %>%
   filter(time < 480) %>%
   group_by(id) %>%
-  summarise(mean_exp = median(response, na.rm = T))
+  summarise(mean_exp = mean(response, na.rm = T))
 
 # Join data with Mig1 data 
 time_vec <- as.numeric(colnames(data_hxk_raw[3:n_col]))
@@ -75,7 +74,6 @@ data_early_hxk1 <- data_plot %>%
             mean_hxk  = mean(hxk_exp, na.rm = T)) %>%
   filter(strain == short_name[2]) 
 
-  
 p1 <- ggplot(data_early_hxk1, aes(mean_hxk, mean_mig1)) + 
   geom_point() + 
   geom_rangeframe() + 
@@ -105,7 +103,8 @@ for(i in 1:10000){
   i_min <- (i-1)*n_cell
   i_max <- (i)*n_cell
   #data_use <- data_plot[sample(1:(132*5000), n_cell),  ]
-  data_use <- data_plot[i_min:i_max, ]  
+  data_use <- data_plot[i_min:i_max, ] 
+  data_use <- data_use[!(data_use$response == Inf), ]
   
   my_mod2 <- lm(response ~ c1, data = data_use)
   (sum_mod_2 <- summary(my_mod2))

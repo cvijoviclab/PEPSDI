@@ -17,12 +17,12 @@ using Distributions
 using Printf
 using Random
 using LinearAlgebra
-tmp = push!(LOAD_PATH, pwd() * "/Code") # Push PEPSDI into load-path 
+tmp = push!(LOAD_PATH, pwd() * "/src") # Push PEPSDI into load-path 
 using PEPSDI # Load PEPSDI 
 
 
 # The differenttial equations for the Ornstien-model 
-include(pwd() * "/Code/Models/Ornstein.jl")
+include(pwd() * "/Paper/Models/Ornstein.jl")
 
 
 if length(ARGS) == 5

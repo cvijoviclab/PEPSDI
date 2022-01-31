@@ -3,6 +3,7 @@ library(ggthemes)
 library(latex2exp)
 library(data.table)
 library(mcmcse)
+library(transport)
 
 # General plotting parameters 
 my_theme <- theme_tufte(base_size = 24) + theme(plot.title = element_text(hjust = 0.5, size = 14, face="bold"), 
@@ -23,8 +24,12 @@ process_single_individual <- function(model_name)
   dir_data <- str_c("../../../Intermediate/Single_individual/", model_name)
   
   data_res <- tibble()
+  data_chain_save <- tibble()
   
   file_list <- list.files(dir_data)
+  file_list <- file_list[file_list != "Kalman_1"]
+  file_list <- file_list[file_list != "Kalman_12"]
+  file_list <- file_list[file_list != "Kalman_123"]
   for(i in 1:length(file_list)){
     
     
@@ -73,24 +78,69 @@ process_single_individual <- function(model_name)
         data_save <- tibble(multi_ess = multi_ess, run = run, sampler = sampler, start_guess = start_guess, 
                             data_set = data_set, n_part = n_part)
         
+        data_chain <- data %>%
+          mutate(run = run, sampler = sampler, start_guess = start_guess, data_set = data_set, n_part = n_part)
+        
         data_res <- data_res %>%
           bind_rows(data_save)
+        data_chain_save <- data_chain_save %>%
+          bind_rows(data_chain)
         
       }
     }
   }
   
-  return(data_res)
+  return(list(data_res, data_chain_save))
+  
+}
+
+
+create_density_plots <- function(data_chain, model_name, true_val = c(-0.7, 2.3, -0.9)){
+
+  # Density plots for all samplers and start guesses OU model 
+  dir_save_rev <- str_c(dir_save, "Review/", model_name, "/")
+  if(!dir.exists(dir_save_rev)) dir.create(dir_save_rev, recursive = T)
+  for(i in 1:5){
+    
+    data_i <- data_chain %>%
+      filter(start_guess == i) %>%
+      mutate(sampler = as.factor(sampler), run = as.factor(run), data_set = as.factor(data_set))
+    
+    p1 <- ggplot(data_i, aes(c1, color = sampler, linetype = run)) + 
+      geom_density() + 
+      geom_vline(xintercept = true_val[1]) + 
+      scale_color_manual(values = my_colors[-1])
+    p2 <- ggplot(data_i, aes(c2, color = sampler, linetype = run)) + 
+      geom_density() + 
+      geom_vline(xintercept = true_val[2]) +
+      scale_color_manual(values = my_colors[-1])
+    p3 <- ggplot(data_i, aes(c3, color = sampler, linetype = run)) + 
+      geom_density() + 
+      geom_vline(xintercept = true_val[3]) +
+      scale_color_manual(values = my_colors[-1])
+    p_save <- ggpubr::ggarrange(p1, p2, p3, ncol = 3, common.legend = T)
+    
+    file_save <- str_c(dir_save_rev, model_name, "_sg", as.character(i), ".png")
+    ggsave(file_save, p_save, width = BASE_WIDTH * 3, height = BASE_HEIGHT)
+  }
+  
+  ggplot(data_i, aes(c1, color = sampler, linetype = run)) + 
+    geom_density(aes(color = sampler)) + 
+    geom_vline(xintercept = -0.7) + 
+    scale_color_manual(values = my_colors[-1])
   
 }
 
 
 # Process single-individual functions 
 model_name <- "Ornstein_test_proposal"
-data_orn <- process_single_individual(model_name)
+res <- process_single_individual(model_name)
+data_orn <- res[[1]]
+create_density_plots(res[[2]], "OU")
+data_chain <- res[[2]]
 
 data_plot <- data_orn %>%
-  mutate(sampler = as.factor(sampler)) %>%
+    mutate(sampler = as.factor(sampler)) %>%
   mutate(start_guess = as.factor(start_guess)) 
 
 
@@ -109,7 +159,9 @@ ggsave(str_c(dir_save, "Single_orn.svg"), p, bg = "transparent", width = BASE_WI
 
 # Process single-individual functions 
 model_name <- "Schlogl_test_proposal"
-data_sch <- process_single_individual(model_name)
+res <- process_single_individual(model_name)
+data_sch <- res[[1]]
+create_density_plots(res[[2]], "Schlogl", true_val = log(c(1.8e-1, 2.5e-4, 2.2e3)))
 
 data_plot <- data_sch %>%
   mutate(sampler = as.factor(sampler)) %>%
@@ -142,4 +194,46 @@ p <- ggplot(data_plot, aes(start_guess, multi_ess, fill = sampler)) +
   my_theme + theme(axis.text.x = element_blank())
 
 ggsave(str_c(dir_save, "Single_bar.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
+
+
+# Produce distance metric 
+n_runs <- floor(dim(data_chain)[1] / 48000)
+sampler_list <- c("RAM", "AM", "GenAM")
+sg_list <- 1:5
+data_set_list <- c(1, 12, 123)
+run_list <- 1:10
+
+start_time <- Sys.time()
+list_res <- parallel::mclapply(run_list, function(i){
+  
+  run_use <- i
+  result <- tibble()
+  
+  for(j in length(data_set_list)){
+    for(k in length(sg_list)){
+      for(l in 1:length(sampler_list)){
+        
+        data_set_use <- data_set_list[j]
+        data_set_c <- as.character(data_set_list[j])
+        sg_use <- sg_list[k] 
+        sampler_use <- sampler_list[l]
+        
+        data_val <- read_csv(str_c("../../../Intermediate/Single_individual/Ornstein_test_proposal/Kalman_", data_set_c, "/Kalman.csv"), col_types = cols())
+        data_test <- data_chain %>%
+          filter(run == run_use & start_guess == sg_use & sampler == sampler_use & data_set == data_set_use)
+        
+        data_val_use <- pp(as.matrix(data_val[38000:48000, 1:3]))
+        data_test_use <- pp(as.matrix(data_test[38000:48000, 1:3]))
+        
+        dist <- wasserstein(data_val_use, data_test_use, p=1)
+        
+        result_tmp <- tibble(dist = dist, sampler = sampler_use, start_guess = sg_use, data_set = data_set_use, run = run_use)
+        result <- result %>% bind_rows(result_tmp)
+      }
+    }
+  }
+  
+  return(result)}, mc.cores = 4)
+end_time <- Sys.time()
+
 

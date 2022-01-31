@@ -24,6 +24,17 @@ struct SsaModel{F1<:Function,
 end
 
 
+function pfsample(w, s ,n)
+    t = rand() * s
+    i = 1
+    cw = w[1]
+    while cw < t && i < n
+        i += 1
+        @inbounds cw += w[i]
+    end
+    return i
+end
+
 """
     step_direct_method!(x_current, 
                         t_start::T1, 
@@ -56,11 +67,13 @@ function step_direct_method!(x_current,
         model.calc_h_vec!(x_current, h_vec, p, t_curr)
         transition_rate = sum(h_vec)
 
-        # Expontial random numbers 
-        delta_t = -log(rand()) / transition_rate 
+        # Expontial random numbers         
+        delta_t = -log(rand()) / transition_rate
         t_curr += delta_t
         
         # Weighted sampling of next reaction 
+        next_reaction = pfsample(h_vec, transition_rate, model.n_reactions)
+        #=
         selector = transition_rate * rand()
         @inbounds for i in 1:model.n_reactions
             selector -= h_vec[i]
@@ -69,6 +82,7 @@ function step_direct_method!(x_current,
                 break
             end
         end
+        =#
 
         @views x_current .-= model.S_mat[next_reaction, :]
         iter += 1

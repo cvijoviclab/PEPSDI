@@ -20,42 +20,43 @@ using StaticArrays
 using SparseArrays
 using SpecialFunctions 
 
+# This aims to make PEPSDI compatible with Float32 in the future 
 const FLOAT=Float64
 export FLOAT 
 
 
-include(pwd() * "/Code/Particle_filters/Filter_structs.jl")
-include(pwd() * "/Code/Mcmc_algorithms/Mcmc_structs.jl")
-include(pwd() * "/Code/Inference/Inference_struct.jl")
-include(pwd() * "/Code/Pilot_run/Struct_pilot_run.jl")
+include(pwd() * "/src/Particle_filters/Filter_structs.jl")
+include(pwd() * "/src/Mcmc_algorithms/Mcmc_structs.jl")
+include(pwd() * "/src/Inference/Inference_struct.jl")
+include(pwd() * "/src/Pilot_run/Struct_pilot_run.jl")
 
-include(pwd() * "/Code/Stochastic_solvers/SDE.jl")
-include(pwd() * "/Code/Stochastic_solvers/Gillespie.jl")
-include(pwd() * "/Code/Stochastic_solvers/Poisson.jl")
-include(pwd() * "/Code/Stochastic_solvers/Extrande.jl")
+include(pwd() * "/src/Stochastic_solvers/SDE.jl")
+include(pwd() * "/src/Stochastic_solvers/Gillespie.jl")
+include(pwd() * "/src/Stochastic_solvers/Poisson.jl")
+include(pwd() * "/src/Stochastic_solvers/Extrande.jl")
 
-include(pwd() * "/Code/Particle_filters/Common.jl")
-include(pwd() * "/Code/Particle_filters/Bootstrap_filter.jl")
-include(pwd() * "/Code/Particle_filters/Bootstrap_filter_ssa.jl")
-include(pwd() * "/Code/Particle_filters/Modified_bridge.jl")
-include(pwd() * "/Code/Particle_filters/Bootstrap_poisson.jl")
-include(pwd() * "/Code/Particle_filters/Bootstrap_extrande.jl")
+include(pwd() * "/src/Particle_filters/Common.jl")
+include(pwd() * "/src/Particle_filters/Bootstrap_filter.jl")
+include(pwd() * "/src/Particle_filters/Bootstrap_filter_ssa.jl")
+include(pwd() * "/src/Particle_filters/Modified_bridge.jl")
+include(pwd() * "/src/Particle_filters/Bootstrap_poisson.jl")
+include(pwd() * "/src/Particle_filters/Bootstrap_extrande.jl")
     
-include(pwd() * "/Code/Mcmc_algorithms/McmcAlg.jl")
-include(pwd() * "/Code/Mcmc_algorithms/Population_samplers.jl")
+include(pwd() * "/src/Mcmc_algorithms/McmcAlg.jl")
+include(pwd() * "/src/Mcmc_algorithms/Population_samplers.jl")
 
-include(pwd() * "/Code/Inference/Common.jl")
-include(pwd() * "/Code/Inference/Single_individual.jl")
-include(pwd() * "/Code/Inference/Multiple_individuals/Create_arrays.jl")
-include(pwd() * "/Code/Inference/Multiple_individuals/PEPSDI_opt1.jl")
-include(pwd() * "/Code/Inference/Multiple_individuals/Input_arguments.jl")
-include(pwd() * "/Code/Inference/Multiple_individuals/PEPSDI_opt2.jl")
-include(pwd() * "/Code/Inference/Multiple_individuals/Common.jl")
-include(pwd() * "/Code/Inference/Multiple_individuals/Pvc.jl")
+include(pwd() * "/src/Inference/Common.jl")
+include(pwd() * "/src/Inference/Single_individual.jl")
+include(pwd() * "/src/Inference/Multiple_individuals/Create_arrays.jl")
+include(pwd() * "/src/Inference/Multiple_individuals/PEPSDI_opt1.jl")
+include(pwd() * "/src/Inference/Multiple_individuals/Input_arguments.jl")
+include(pwd() * "/src/Inference/Multiple_individuals/PEPSDI_opt2.jl")
+include(pwd() * "/src/Inference/Multiple_individuals/Common.jl")
+include(pwd() * "/src/Inference/Multiple_individuals/Pvc.jl")
 
-include(pwd() * "/Code/Pilot_run/Single_individual.jl")
-include(pwd() * "/Code/Pilot_run//Multiple_individuals/Load_pilot_result.jl")
-include(pwd() * "/Code/Pilot_run/Multiple_individuals/Run_pilot_tuning.jl")
+include(pwd() * "/src/Pilot_run/Single_individual.jl")
+include(pwd() * "/src/Pilot_run//Multiple_individuals/Load_pilot_result.jl")
+include(pwd() * "/src/Pilot_run/Multiple_individuals/Run_pilot_tuning.jl")
 
 
 export ParamInfoPop, ParamInfoIndPre, ParamInfoInd, DynModInput, PopParam, 
@@ -80,7 +81,8 @@ export solve_sde_em, IndData, init_ind_data, BootstrapEm, BootstrapFilterEm, ini
     map_proposal_to_model_parameters_ind!, pdf_poisson, PopSamplerNormalLjkOptTwo, 
     PopSamplerNormalLjkTwo, PopNormalLjkTwo, pvc_mixed_mean_post, pvc_mixed_mean_post, 
     pvc_mixed_quant_mean, init_filter_pilot, simulate_data_poisson, run_PEPSDI_opt1, run_PEPSDI_opt2, 
-    tune_particles_opt1, tune_particles_opt2
+    tune_particles_opt1, tune_particles_opt2, solve_ssa_model_n_times, solve_sde_model_n_times, 
+    solve_extrande_model_n_times, solve_extrande_model
 
 
 # For debugging 
@@ -95,6 +97,7 @@ export init_pop_sampler, init_ind_data_arr, init_pop_param_curr, calc_dist_ind_p
     
 export KappaSigmaNormalSamplerOpt, KappaSigmaNormalSampler, init_kappa_sigma_sampler_opt, 
     run_gibbs_alt, KappaSigmaNormal, calc_cholesky!, save_mcmc_opt_pilot, run_pvc_mixed, 
-    step_extrande_method!
+    step_extrande_method!, calc_log_pdf_mvn, BootstrapExtrandBlock, BootstrapFilterExtrandBlock, 
+    RandomNumbersSsaBlock
 
 end

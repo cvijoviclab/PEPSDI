@@ -193,6 +193,7 @@ function create_rand_num(ind_data::IndData, model::ExtrandModel, filter; rng::Me
 end
 
 
+
 """
     update_random_numbers!(rand_num::RandomNumbers, 
                            filter::BootstrapFilterEm;
@@ -458,10 +459,10 @@ Error_param is assumed to be an array.
 See also: [`ModelParameters`](@ref)
 """ 
 function init_model_parameters(ind_param, error_param, model::SdeModel; covariates=false, kappa=false)::ModelParameters
+    
     if covariates == false
         covariates = Array{FLOAT, 1}(undef, 0)
     end
-
     if kappa == false
         kappa = Array{FLOAT, 1}(undef, 0)
         ind_param = DynModInput(ind_param, kappa, covariates)
@@ -481,18 +482,19 @@ end
 Allocate and initalise ModelParameters-struct for ssa-model (initial values UInt16)
 """
 function init_model_parameters(ind_param, error_param, model::SsaModel; covariates=false, kappa=false)::ModelParameters
+    
     if covariates == false
         covariates = Array{FLOAT, 1}(undef, 0)
     end
-    x0::Array{UInt16} = Array{UInt16, 1}(undef, model.dim)
-    model.calc_x0!(x0, ind_param)
-
     if kappa == false
         kappa = Array{FLOAT, 1}(undef, 0)
         ind_param = DynModInput(ind_param, kappa, covariates)
     else
         ind_param = DynModInput(ind_param, kappa, covariates)
     end
+
+    x0::Array{UInt16} = Array{UInt16, 1}(undef, model.dim)
+    model.calc_x0!(x0, ind_param)
 
     # Struct object 
     return ModelParameters(ind_param, x0, error_param, covariates)

@@ -80,6 +80,18 @@ end
 
 
 """
+    RandomNumbersSsaBlock
+
+Random-numbers for resampling SSA/Extrande-model block particle filters. 
+"""
+struct RandomNumbersSsaBlock{T1<:Array{<:Int64, 1}, T2<:Array{RandomNumbersSsa, 1}}
+
+    rng_list::T1
+    rand_num_struct::T2
+end
+
+
+"""
     ModelParameters
 
 Rates, error-parameters, initial-values and covariates for individual i. 
@@ -174,4 +186,16 @@ struct ModDiffusionFilter{T1<:AbstractFloat, T2<:Signed}
     rho::T1    
 end
 struct ModDiffusion
+end
+
+
+
+struct BootstrapFilterExtrandBlock{T1<:AbstractFloat, T2<:Signed, T3<:Array{<:Int64, 1}}
+    rho::T1    
+    n_particles::T2
+    n_block::T2
+    n_part_per_filter::T3
+    delta_t::T1
+end
+struct BootstrapExtrandBlock
 end

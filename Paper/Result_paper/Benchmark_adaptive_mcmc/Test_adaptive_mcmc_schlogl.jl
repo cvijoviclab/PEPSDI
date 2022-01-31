@@ -17,12 +17,12 @@ using Distributions
 using Printf
 using Random
 using LinearAlgebra
-tmp = push!(LOAD_PATH, pwd() * "/Code") # Push PEPSDI into load-path 
+tmp = push!(LOAD_PATH, pwd() * "/src") # Push PEPSDI into load-path 
 using PEPSDI # Load PEPSDI 
 
 
 # Load the model-equations used 
-include(pwd() * "/Code/Models/Schlogl_ssa.jl")
+include(pwd() * "/Paper/Models/Schlogl_ssa.jl")
 
 
 if length(ARGS) == 5
@@ -97,7 +97,7 @@ function test_proposal(n_particles, sampler_use, n_samples, tag, data_set; pilot
     cov_mat = diagm([0.1, 0.1, 0.1, 0.1])
 
     if sampler_use == "AM" && pilot == true 
-        mcmc_sampler = init_mcmc(AmSampler(), param_info, step_before_update=100, cov_mat=cov_mat, lambda = 2.38^2 / 4)
+        mcmc_sampler = init_mcmc(AmSampler(), param_info, step_before_update=100, cov_mat=cov_mat)
         file_loc = init_file_loc(path_data, dir_save * "/AM")
 
     elseif sampler_use == "RAM" && pilot == true
@@ -109,7 +109,7 @@ function test_proposal(n_particles, sampler_use, n_samples, tag, data_set; pilot
         file_loc = init_file_loc(path_data, dir_save * "/RAM_alt")
 
     elseif sampler_use == "GenAM" && pilot == true
-        mcmc_sampler = init_mcmc(GenAmSampler(), param_info, step_before_update=100, cov_mat=cov_mat, log_lambda= log(2.38^2 / 4))
+        mcmc_sampler = init_mcmc(GenAmSampler(), param_info, step_before_update=100, cov_mat=cov_mat)
         file_loc = init_file_loc(path_data, dir_save * "/GenAM")
 
     elseif sampler_use == "RAM" && pilot == false

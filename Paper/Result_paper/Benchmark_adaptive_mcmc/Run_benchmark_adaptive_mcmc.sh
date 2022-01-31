@@ -19,11 +19,11 @@
 run_schlogl_pilot_cluster ()
 {
     #~/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg1 $2 1 pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg2 $2 1 pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg3 $2 1 pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg4 $2 1 pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg5 $2 1 pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg1 $2 1 pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg2 $2 1 pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg3 $2 1 pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg4 $2 1 pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg5 $2 1 pilot &
 }
 
 
@@ -34,11 +34,11 @@ run_schlogl_pilot_cluster ()
 run_schlogl_cluster ()
 {
     #~/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg1 $2 $3 not_pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg2 $2 $3 not_pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg3 $2 $3 not_pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg4 $2 $3 not_pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg5 $2 $3 not_pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg1 $2 $3 not_pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg2 $2 $3 not_pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg3 $2 $3 not_pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg4 $2 $3 not_pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_schlogl.jl $1 sg5 $2 $3 not_pilot &
     
 }
 
@@ -49,11 +49,11 @@ run_schlogl_cluster ()
 run_ornstein_pilot_cluster ()
 {
     #~/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg1 $2 1 pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg2 $2 1 pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg3 $2 1 pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg4 $2 1 pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg5 $2 1 pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg1 $2 1 pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg2 $2 1 pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg3 $2 1 pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg4 $2 1 pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg5 $2 1 pilot &
 }
 
 
@@ -64,11 +64,11 @@ run_ornstein_pilot_cluster ()
 run_ornstein_cluster ()
 {
     #~/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg1 $2 $3 not_pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg2 $2 $3 not_pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg3 $2 $3 not_pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg4 $2 $3 not_pilot &
-    /home/sebpe/julia-1.5.2/bin/julia ./Code/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg5 $2 $3 not_pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg1 $2 $3 not_pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg2 $2 $3 not_pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg3 $2 $3 not_pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg4 $2 $3 not_pilot &
+    /home/sebpe/julia-1.5.2/bin/julia ./Paper/Result_paper/Benchmark_adaptive_mcmc/Test_adaptive_mcmc_ornstein.jl $1 sg5 $2 $3 not_pilot &
     
 }
 
@@ -77,15 +77,15 @@ simulate_data_desktop ()
 {
     # Simulate Ornstein-model 
     echo "Ornstien model"
-    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Code/Generate_simulated_data/Generate_simulated_data.jl Single_ornstein 1
-    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Code/Generate_simulated_data/Generate_simulated_data.jl Single_ornstein 12
-    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Code/Generate_simulated_data/Generate_simulated_data.jl Single_ornstein 123
+    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Paper/Generate_simulated_data/Generate_simulated_data.jl Single_ornstein 1
+    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Paper/Generate_simulated_data/Generate_simulated_data.jl Single_ornstein 12
+    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Paper/Generate_simulated_data/Generate_simulated_data.jl Single_ornstein 123
 
     # Simulate Schogl-model 
     echo "Schlögl model"
-    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Code/Generate_simulated_data/Generate_simulated_data.jl Single_schlogl_ssa 12 
-    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Code/Generate_simulated_data/Generate_simulated_data.jl Single_schlogl_ssa 123
-    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Code/Generate_simulated_data/Generate_simulated_data.jl Single_schlogl_ssa 12345
+    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Paper/Generate_simulated_data/Generate_simulated_data.jl Single_schlogl_ssa 12 
+    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Paper/Generate_simulated_data/Generate_simulated_data.jl Single_schlogl_ssa 123
+    /home/sebpe/julia-1.5.2-linux-x86_64/julia-1.5.2/bin/julia ./Paper/Generate_simulated_data/Generate_simulated_data.jl Single_schlogl_ssa 12345
 }
 
 

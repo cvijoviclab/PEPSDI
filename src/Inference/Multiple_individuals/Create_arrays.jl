@@ -126,7 +126,8 @@ See also: [`init_ind_data`](@ref)
 function init_ind_data_arr(file_loc::FileLocations, filter_opt)::Array{IndData, 1}
 
     # Read data and extract all individuals 
-    data_obs::DataFrame = CSV.read(file_loc.path_data, DataFrame, types=Dict(:id=>Int64))
+    
+    data_obs::DataFrame = CSV.read(file_loc.path_data, DataFrame)#, types=Dict(:id=>Int64))
     
     id_list_pre::Array{Int64, 1} = data_obs[!, :id][:]
     id_list::Array{Int64, 1} = unique(id_list_pre)
