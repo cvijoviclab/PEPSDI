@@ -82,11 +82,10 @@ function step_extrande_method!(x_current,
         L = t_end - t_curr
 
         # Check if should fire reaction channels 
-        tau = -log_rand(rng) / B
-        t_curr += tau
+        tau = -log(rand()) / B
 
-        if tau < L
-            
+        if tau < L    
+            t_curr += tau
             model.calc_h_vec!(x_current, h_vec, p, t_curr)
             transition_rate = sum(h_vec)
             
@@ -103,6 +102,8 @@ function step_extrande_method!(x_current,
                 
                 @views x_current .-= model.S_mat[next_reaction, :]
             end
+        else
+            t_curr += L
         end
 
     end

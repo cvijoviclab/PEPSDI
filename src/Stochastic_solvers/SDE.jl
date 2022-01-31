@@ -306,6 +306,49 @@ function solve_sde_em(sde_mod, time_span, u0, c, dt; stand_step=true)
 end
 
 
+function solve_sde_model_n_times(model, time_span, p, dt; times_solve=1000)
+
+    # For storing the result
+    t_vec = range(time_span[1], time_span[2], step=dt)
+    n_col_sol = length(t_vec)
+    n_col_sol = length(t_vec)
+    sol_mat::Array{Float64, 2} = Array{Float64, 2}(undef, (model.dim*times_solve, n_col_sol))
+
+    # Solve the SDE:s multiple times 
+    for i in 1:times_solve
+        x_current = Array{Float64, 1}(undef, model.dim)
+        model.calc_x0!(x_current, p)
+        t_vec1, u_mat1 = solve_sde_em(model, time_span, x_current, p, dt)
+
+        i_low = model.dim * i - (model.dim - 1)
+        i_upp = model.dim * i
+        @views sol_mat[i_low:i_upp, :] = u_mat1
+    end
+
+    # Aggregate the median and mean values, note the first
+    # three columns are the first state, the second pair is the
+    # second state etc.
+    quant = zeros(model.dim*3, n_col_sol)
+    for i in 1:model.dim
+
+        i_rows = i:model.dim:(times_solve*model.dim)
+        start_index = (i - 1) *3 + 1
+
+        quant[start_index, :] = median(sol_mat[i_rows, :], dims=1)
+
+        # Fixing the quantiles
+        for j in 1:n_col_sol
+            i_low = start_index+1
+            i_upp = start_index+2
+            quant[i_low:i_upp, j] = quantile(sol_mat[i_rows, j], [0.05, 0.95])
+        end
+    end
+
+    return t_vec, quant 
+
+end
+
+
 """
     simulate_data_sde(sde_mod, error_dist, t_vec, c, x0; dt=1e-5)
 
