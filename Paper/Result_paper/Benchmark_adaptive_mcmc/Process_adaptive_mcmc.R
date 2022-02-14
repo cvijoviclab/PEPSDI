@@ -1,9 +1,7 @@
 library(tidyverse)
 library(ggthemes)
-library(latex2exp)
 library(data.table)
 library(mcmcse)
-library(transport)
 
 # General plotting parameters 
 my_theme <- theme_tufte(base_size = 24) + theme(plot.title = element_text(hjust = 0.5, size = 14, face="bold"), 
@@ -30,6 +28,7 @@ process_single_individual <- function(model_name)
   file_list <- file_list[file_list != "Kalman_1"]
   file_list <- file_list[file_list != "Kalman_12"]
   file_list <- file_list[file_list != "Kalman_123"]
+  file_list <- file_list[file_list != "Distance"]
   for(i in 1:length(file_list)){
     
     
@@ -91,7 +90,7 @@ process_single_individual <- function(model_name)
   }
   
   return(list(data_res, data_chain_save))
-  
+    
 }
 
 
@@ -140,9 +139,8 @@ create_density_plots(res[[2]], "OU")
 data_chain <- res[[2]]
 
 data_plot <- data_orn %>%
-    mutate(sampler = as.factor(sampler)) %>%
+  mutate(sampler = as.factor(sampler)) %>%
   mutate(start_guess = as.factor(start_guess)) 
-
 
 p <- ggplot(data_plot, aes(start_guess, multi_ess, fill = sampler)) + 
   geom_boxplot() + 
@@ -161,6 +159,7 @@ ggsave(str_c(dir_save, "Single_orn.svg"), p, bg = "transparent", width = BASE_WI
 model_name <- "Schlogl_test_proposal"
 res <- process_single_individual(model_name)
 data_sch <- res[[1]]
+data_chain <- res[[2]]
 create_density_plots(res[[2]], "Schlogl", true_val = log(c(1.8e-1, 2.5e-4, 2.2e3)))
 
 data_plot <- data_sch %>%
@@ -168,7 +167,6 @@ data_plot <- data_sch %>%
   mutate(start_guess = as.factor(start_guess)) %>%
   mutate(multi_ess = multi_ess + 1) %>%
   filter(multi_ess < 1e6) # Does not change results, but removes runs with bad inference runs (few outliers)
-
 
 p <- ggplot(data_plot, aes(start_guess, multi_ess, fill = sampler)) + 
   geom_boxplot() + 
@@ -182,7 +180,7 @@ p <- ggplot(data_plot, aes(start_guess, multi_ess, fill = sampler)) +
   
 ggsave(str_c(dir_save, "Single_schlogl.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
 
-
+# For the color-bar in final figure 
 p <- ggplot(data_plot, aes(start_guess, multi_ess, fill = sampler)) + 
   geom_boxplot() + 
   geom_rangeframe(size = 1.0, sides = "l") + 
@@ -197,43 +195,18 @@ ggsave(str_c(dir_save, "Single_bar.svg"), p, bg = "transparent", width = BASE_WI
 
 
 # Produce distance metric 
-n_runs <- floor(dim(data_chain)[1] / 48000)
-sampler_list <- c("RAM", "AM", "GenAM")
-sg_list <- 1:5
-data_set_list <- c(1, 12, 123)
-run_list <- 1:10
+data_dist <- read_csv("../../../Intermediate/Single_individual/Ornstein_test_proposal/Distance/Distance_data.csv", col_types = cols())
+# Obtain data about the number of particles used 
+data_plot <- data_dist %>%
+  full_join(data_orn, by = c("run", "sampler", "start_guess", "data_set")) %>%
+  mutate(start_guess = as.factor(start_guess), sampler = as.factor(sampler))
 
-start_time <- Sys.time()
-list_res <- parallel::mclapply(run_list, function(i){
-  
-  run_use <- i
-  result <- tibble()
-  
-  for(j in length(data_set_list)){
-    for(k in length(sg_list)){
-      for(l in 1:length(sampler_list)){
-        
-        data_set_use <- data_set_list[j]
-        data_set_c <- as.character(data_set_list[j])
-        sg_use <- sg_list[k] 
-        sampler_use <- sampler_list[l]
-        
-        data_val <- read_csv(str_c("../../../Intermediate/Single_individual/Ornstein_test_proposal/Kalman_", data_set_c, "/Kalman.csv"), col_types = cols())
-        data_test <- data_chain %>%
-          filter(run == run_use & start_guess == sg_use & sampler == sampler_use & data_set == data_set_use)
-        
-        data_val_use <- pp(as.matrix(data_val[38000:48000, 1:3]))
-        data_test_use <- pp(as.matrix(data_test[38000:48000, 1:3]))
-        
-        dist <- wasserstein(data_val_use, data_test_use, p=1)
-        
-        result_tmp <- tibble(dist = dist, sampler = sampler_use, start_guess = sg_use, data_set = data_set_use, run = run_use)
-        result <- result %>% bind_rows(result_tmp)
-      }
-    }
-  }
-  
-  return(result)}, mc.cores = 4)
-end_time <- Sys.time()
-
-
+p <- ggplot(data_plot, aes(start_guess, dist, fill = sampler)) + 
+  geom_boxplot() + 
+  geom_rangeframe(size = 1.0, sides = "l") + 
+  geom_point(aes(color = n_part), position=position_jitterdodge(), size = 1.5) + 
+  scale_fill_manual(values = my_colors[-c(1, 4)]) + 
+  scale_color_viridis_c() +
+  labs(x = "", y = "") +
+  my_theme + theme(axis.text.x = element_blank(), legend.position = "none")
+ggsave(str_c(dir_save, "Dist_ou.svg"), p, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)

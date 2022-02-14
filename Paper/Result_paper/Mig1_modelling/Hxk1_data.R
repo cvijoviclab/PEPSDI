@@ -80,6 +80,20 @@ p1 <- ggplot(data_early_hxk1, aes(mean_hxk, mean_mig1)) +
   geom_smooth(method = "lm", se = F) + 
   my_theme 
 
+# Same conclusions hold if we work on log-scale of hxk-expression instead 
+ggplot(data_early_hxk1, aes(log(mean_hxk), mean_mig1)) + 
+  geom_point() + 
+  geom_rangeframe() + 
+  geom_smooth(method = "lm", se = F) + 
+  my_theme 
+
+my_mod <- lm(mean_mig1 ~ log(mean_hxk), data = data_early_hxk1)
+(my_mod_sum <- summary(my_mod))
+
+# qq-plot is good (not perfect but good)
+qqnorm(my_mod$res)
+qqline(my_mod$residuals)
+
 # The linear relationship is strong 
 my_mod <- lm(mean_mig1 ~ mean_hxk, data = data_early_hxk1)
 (my_mod_sum <- summary(my_mod))
@@ -89,10 +103,10 @@ qqnorm(my_mod$res)
 qqline(my_mod$residuals)
 
 
-# Access model simulations, take average over 15 minutes in model 
+# Access model simulations, take average over 15 minutes in model (to match experimental data)
 dir_best <- "../../../Intermediate/Multiple_individuals/Mig1_mod_2B/Ram_sampler/Npart100_nsamp40000_corr0.999_exp_id4_run1/"
 data_plot <- read_csv(str_c(dir_best, "Pred_c1.csv"), col_types = cols()) %>%
-  mutate(response = (t1 + t2 + t3) / 3) %>%
+  mutate(response = (t1 + t2 + t3) / 3) #%>%
   filter(c1 < 10000)
 
 # Get credabillity intervall for R2 predicted by the model 
@@ -102,7 +116,6 @@ for(i in 1:10000){
 
   i_min <- (i-1)*n_cell
   i_max <- (i)*n_cell
-  #data_use <- data_plot[sample(1:(132*5000), n_cell),  ]
   data_use <- data_plot[i_min:i_max, ] 
   data_use <- data_use[!(data_use$response == Inf), ]
   

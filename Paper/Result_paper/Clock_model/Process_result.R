@@ -18,14 +18,11 @@ PriorDist <- setClass("PriorDist", slots = list(dist="character", param="numeric
 dir_save <- "../../../Results/Paper_figures/Fig2/"
 if(!dir.exists(dir_save)) dir.create(dir_save)
 
-dir_res <- "../../../Intermediate/Multiple_individuals/Clock_model_review/Ram_sampler/Npart1000_nsamp50000_corr0.0_exp_id2_run1/"
+dir_res <- "../../../Intermediate/Multiple_individuals/Clock_model/Ram_sampler/Npart1000_nsamp50000_corr0.0_exp_id1_run1/"
 
 data_mean <- read_csv(str_c(dir_res, "Mean.csv"), col_types = cols()) %>%
   mutate(sample = 1:50000) %>%
-  filter(sample > 10000 * 0.2) %>%
-  filter(mu1 > 0.5) %>%
-  filter(mu2 > 2.5) %>%
-  filter(mu3 < 2.0)
+  filter(sample > 10000 * 0.2) 
 
 p1 <- ggplot(data_mean, aes(mu1)) + 
   geom_density(size = 3.0, color = my_colors[8]) + 
@@ -59,10 +56,7 @@ ggsave(str_c(dir_save, "Mu4.svg"), p4, bg = "transparent", width = BASE_WIDTH-1,
 
 data_scale <- read_csv(str_c(dir_res, "Scale.csv"), col_types = cols()) %>%
   mutate(sample = 1:50000) %>%
-  filter(sample > 10000 * 0.2) %>%
-  filter(scale1 < 1.0) %>%
-  filter(scale2 < 1) %>%
-  filter(scale3 < 1)
+  filter(sample > 10000 * 0.2) 
 
 p1 <- ggplot(data_scale, aes(scale1)) + 
   geom_density(size = 3.0, color = my_colors[8]) + 
@@ -281,10 +275,44 @@ for(i in 1:(dim(data_pair)[2]-1)){
   }
 }
 
+dir_res_rev <- "../../../Intermediate/Multiple_individuals/Clock_model_review/Ram_sampler/Npart1000_nsamp50000_corr0.0_exp_id2_run1/"
+data_scale_rev <- read_csv(str_c(dir_res_rev, "Scale.csv"), col_types = cols()) %>%
+  mutate(tag = "review") %>%
+  mutate(sample = 1:50000) %>%
+  filter(sample > 20000)
+data_scale <- data_scale %>%
+  mutate(tag = "old")
+data_plot <- data_scale %>%
+  bind_rows(data_scale_rev) %>%
+  mutate(tag = as.factor(tag))
 
+p4 <- ggplot(data_plot, aes(scale1, color = tag)) + 
+  geom_density(size = 1.0) + 
+  geom_vline(xintercept = 0.4) + 
+  labs(x = "", y = "") + 
+  geom_rangeframe(size = 1.0, color = "black") + 
+  my_theme + theme(legend.position = "none")
+p1 <- ggplot(data_plot, aes(scale2, color = tag)) + 
+  geom_density(size = 1.0) + 
+  geom_vline(xintercept = 0.2) + 
+  labs(x = "", y = "") + 
+  geom_rangeframe(size = 1.0, color = "black") + 
+  my_theme + theme(legend.position = "none")
+p2 <- ggplot(data_plot, aes(scale3, color = tag)) + 
+  geom_density(size = 1.0) + 
+  geom_vline(xintercept = 0.2) + 
+  geom_rangeframe(size = 1.0, color = "black") + 
+  labs(x = "", y = "") + 
+  my_theme + theme(legend.position = "none")
+p3 <- ggplot(data_plot, aes(scale4, color = tag)) + 
+  geom_density(size = 1.0) + 
+  geom_vline(xintercept = 0.1) + 
+  geom_rangeframe(size = 1.0, color = "black") + 
+  labs(x = "", y = "") + 
+  my_theme + theme(legend.position = "none")
 
-
-
-
-
-
+ggsave(str_c(dir_save, "Scale2_rev.svg"), p1, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
+ggsave(str_c(dir_save, "Scale3_rev.svg"), p2, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
+ggsave(str_c(dir_save, "Scale4_rev.svg"), p3, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
+ggsave(str_c(dir_save, "Scale1_rev.svg"), p4, bg = "transparent", width = BASE_WIDTH, height = BASE_HEIGHT)
+  
