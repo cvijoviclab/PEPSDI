@@ -10,7 +10,11 @@ By levering Hamiltonian-Monte-Carlo sampling via the [Turing-library](https://gi
  
 PEPSDI is introduced, and described, in the manuscript *add*. To get started with PEPSDI the examples in the manuscript are available as notebooks under *Code/Examples*. This folder also contains notebooks on how to leverage the underlaying algorithms in PEPSDI to perform single-individual inference. An extensive tutorial is further available under the examples-folder. The results presented in the manuscript were produced by the scripts in *Code/Result_paper*-folder.  
 
-This repository is a first (pre-alpha) version of PEPSDI. If wanting to use PEPSDI, and need help, the corresponding author in the manuscript can be contacted.  
+This repository is a first (pre-alpha) version of PEPSDI. If wanting to use PEPSDI, and need help, the corresponding author in the manuscript can be contacted. 
+
+## Cite Us 
+If you use PEPSDI in your scientific work, please cite:
+S. Persson, N. Welkenhuysen, S. Shashkova, S. Wiqvist, P. Reith, G. Schmidt, U. Picchini, M. Cvijovic Scalable and flexible inference framework for stochastic dynamic single-cell models. (2022) PLoS Comput Biol 18(5): e1010082. https://doi.org/10.1371/journal.pcbi.1010082
 
 ## A closer look at PEPSDI  
 
